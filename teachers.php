@@ -120,10 +120,10 @@ include("php/header.php");
             <div id="page-inner">
                 <div class="row">
                     <div class="col-md-12">
-                        <h1 class="page-head-line">Estudiantes  
+                        <h1 class="page-head-line">Profesores  
 						<?php
 						echo (isset($_GET['action']) && @$_GET['action']=="add" || @$_GET['action']=="edit")?
-						' <a href="student.php" class="btn btn-primary btn-sm pull-right">Volver <i class="glyphicon glyphicon-arrow-right"></i></a>':'<a href="student.php?action=add" class="btn btn-primary btn-sm pull-right"><i class="glyphicon glyphicon-plus"></i> Agregar Estudiante </a>';
+						' <a href="student.php" class="btn btn-primary btn-sm pull-right">Volver <i class="glyphicon glyphicon-arrow-right"></i></a>':'<a href="student.php?action=add" class="btn btn-primary btn-sm pull-right"><i class="glyphicon glyphicon-plus"></i> Agregar Profesor </a>';
 						?>
 						</h1>
                      
@@ -146,7 +146,7 @@ echo $errormsg;
             <div class="col-sm-10 col-sm-offset-1">
                <div class="panel panel-primary">
                         <div class="panel-heading">
-                           <?php echo ($action=="add")? "Agregar Estudiante": "Editar Estudiante"; ?>
+                           <?php echo ($action=="add")? "Agregar Profesor": "Editar Profesor"; ?>
                         </div>
 						<form action="student.php" method="post" id="signupForm1" class="form-horizontal">
                         <div class="panel-body">
@@ -409,7 +409,7 @@ yearRange: "1970:<?php echo date('Y');?>"
 		 
 		<div class="panel panel-default">
                         <div class="panel-heading">
-                            Administrar Información de los Estudiantes  
+                            Administrar Información de los Profesores  
                         </div>
                         <div class="panel-body">
                             <div class="table-sorting table-responsive">

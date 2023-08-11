@@ -120,10 +120,10 @@ include("php/header.php");
             <div id="page-inner">
                 <div class="row">
                     <div class="col-md-12">
-                        <h1 class="page-head-line">Estudiantes  
+                        <h1 class="page-head-line">Reservas  
 						<?php
 						echo (isset($_GET['action']) && @$_GET['action']=="add" || @$_GET['action']=="edit")?
-						' <a href="student.php" class="btn btn-primary btn-sm pull-right">Volver <i class="glyphicon glyphicon-arrow-right"></i></a>':'<a href="student.php?action=add" class="btn btn-primary btn-sm pull-right"><i class="glyphicon glyphicon-plus"></i> Agregar Estudiante </a>';
+						' <a href="reservations.php" class="btn btn-primary btn-sm pull-right">Volver <i class="glyphicon glyphicon-arrow-right"></i></a>':'<a href="student.php?action=add" class="btn btn-primary btn-sm pull-right"><i class="glyphicon glyphicon-plus"></i> Agregar Reservas </a>';
 						?>
 						</h1>
                      
@@ -153,21 +153,21 @@ echo $errormsg;
 						<fieldset class="scheduler-border" >
 						 <legend  class="scheduler-border">Información Personal:</legend>
 						<div class="form-group">
-								<label class="col-sm-3 control-label" for="Old">Nombre* </label>
+								<label class="col-sm-3 control-label" for="Old">Fecha* </label>
 								<div class="col-sm-9">
 									<input type="text" class="form-control" id="fname" name="fname" value="<?php echo $fname;?>"  />
 								</div>
 							</div>
 	
 						<div class="form-group">
-							<label class="col-sm-3 control-label" for="Old">Apellidos* </label>
+							<label class="col-sm-3 control-label" for="Old">Nombres* </label>
 							<div class="col-sm-9">
 								<input type="text" class="form-control" id="lname" name="lname" value="<?php echo $lname;?>"  />
 							</div>
 						</div>
 
 						<div class="form-group">
-							<label class="col-sm-3 control-label" for="Old">Número de Carnét de Identidad* </label>
+							<label class="col-sm-3 control-label" for="Old">Apellidos* </label>
 							<div class="col-sm-9">
 								<input type="text" class="form-control" id="lname" name="lname" value="<?php echo $lname;?>"  />
 							</div>
@@ -181,33 +181,18 @@ echo $errormsg;
 						</div>
 
 						<div class="form-group">
-							<label class="col-sm-3 control-label" for="Old">Correo Electrónico* </label>
+							<label class="col-sm-3 control-label" for="Old">Curso de interes* </label>
 							<div class="col-sm-9">
 								<input type="text" class="form-control" id="lname" name="lname" value="<?php echo $lname;?>"  />
 							</div>
-						</div>
+						</div>	
 
 						<div class="form-group">
-							<label class="col-sm-3 control-label" for="Old">Ciudad donde vive* </label>
+							<label class="col-sm-3 control-label" for="Old">Observaciones* </label>
 							<div class="col-sm-9">
 								<input type="text" class="form-control" id="lname" name="lname" value="<?php echo $lname;?>"  />
 							</div>
-						</div>
-
-						<div class="form-group">
-							<label class="col-sm-3 control-label" for="Old">Zona donde vive* </label>
-							<div class="col-sm-9">
-								<input type="text" class="form-control" id="lname" name="lname" value="<?php echo $lname;?>"  />
-							</div>
-						</div>
-
-						<div class="form-group">
-								<label class="col-sm-3 control-label" for="Old">Contacto* </label>
-								<div class="col-sm-9">
-									<input type="text" class="form-control" id="contact" name="contact" value="<?php echo $contact;?>" maxlength="10" />
-								</div>
-							</div>		
-						
+						</div>	
 
 						 </fieldset>
 						
@@ -409,7 +394,7 @@ yearRange: "1970:<?php echo date('Y');?>"
 		 
 		<div class="panel panel-default">
                         <div class="panel-heading">
-                            Administrar Información de los Estudiantes  
+                            Administrar Información de las reservas  
                         </div>
                         <div class="panel-body">
                             <div class="table-sorting table-responsive">
@@ -417,13 +402,12 @@ yearRange: "1970:<?php echo date('Y');?>"
                                     <thead>
                                         <tr>
                                             <th>#</th>
-                                            <th>Nombres</th>
-											<th>Apellidos</th>
-                                            <th>Carnet</th>
-                                            <th>Teléfono </th>
-											<th>Email</th>
-											<th>Ciudad</th>
-											<th>Zona</th>
+                                            <th>Fecha</th>
+											<th>Nombres</th>
+                                            <th>Apellidos</th>
+                                            <th>Celular </th>
+											<th>Curso de interes</th>
+											<th>Detalle</th>
 											<th>Acción</th>
                                         </tr>
                                     </thead>
@@ -434,7 +418,6 @@ yearRange: "1970:<?php echo date('Y');?>"
 									$i=1;
 									while($r = $q->fetch_assoc())
 									{
-									
 									echo '<tr>
                                             <td>'.$i.'</td>
                                             <td>'.$r['first_name'].'</td>
@@ -442,20 +425,13 @@ yearRange: "1970:<?php echo date('Y');?>"
 											<td>'.$r['identity_card_number'].'</td>
 											<td>'.$r['phone_number'].'</td>
 											<td>'.$r['email'].'</td>
-											<td>'.$r['city'].'</td>
-											<td>'.$r['zone'].'</td>
-											<td>
-											<a href="student.php?action=edit&id='.$r['student_id'].'" class="btn btn-success btn-xs"><span class="glyphicon glyphicon-edit"></span></a>
-											<a onclick="return confirm(\'Deseas realmente eliminar este registro, este proceso es irreversible\');" href="student.php?action=delete&id='.$r['student_id'].'" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove"></span></a> 
-											<a href="student.php?action=edit&id='.$r['student_id'].'" class="btn btn-success btn-xs"><span class="glyphicon glyphicon-barcode"></span></a>
-											</td>	
+											<td><a href="reservations.php?action=edit&id='.$r['student_id'].'" class="btn btn-success btn-xs"><span class="glyphicon glyphicon-edit"></span></a></td>
+											<td><a onclick="return confirm(\'Deseas realmente eliminar este registro, este proceso es irreversible\');" href="student.php?action=delete&id='.$r['student_id'].'" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove"></span></a></td>	
 										</tr>';
 										$i++;
 									}
 									?>
 									
-                                        
-                                        
                                     </tbody>
                                 </table>
                             </div>

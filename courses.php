@@ -120,10 +120,10 @@ include("php/header.php");
             <div id="page-inner">
                 <div class="row">
                     <div class="col-md-12">
-                        <h1 class="page-head-line">Estudiantes  
+                        <h1 class="page-head-line">Cursos  
 						<?php
 						echo (isset($_GET['action']) && @$_GET['action']=="add" || @$_GET['action']=="edit")?
-						' <a href="student.php" class="btn btn-primary btn-sm pull-right">Volver <i class="glyphicon glyphicon-arrow-right"></i></a>':'<a href="student.php?action=add" class="btn btn-primary btn-sm pull-right"><i class="glyphicon glyphicon-plus"></i> Agregar Estudiante </a>';
+						' <a href="student.php" class="btn btn-primary btn-sm pull-right">Volver <i class="glyphicon glyphicon-arrow-right"></i></a>':'<a href="student.php?action=add" class="btn btn-primary btn-sm pull-right"><i class="glyphicon glyphicon-plus"></i> Agregar Cursos </a>';
 						?>
 						</h1>
                      
@@ -146,12 +146,12 @@ echo $errormsg;
             <div class="col-sm-10 col-sm-offset-1">
                <div class="panel panel-primary">
                         <div class="panel-heading">
-                           <?php echo ($action=="add")? "Agregar Estudiante": "Editar Estudiante"; ?>
+                           <?php echo ($action=="add")? "Agregar Curso": "Editar Curso"; ?>
                         </div>
 						<form action="student.php" method="post" id="signupForm1" class="form-horizontal">
                         <div class="panel-body">
 						<fieldset class="scheduler-border" >
-						 <legend  class="scheduler-border">Información Personal:</legend>
+						 <legend  class="scheduler-border">Información Del Curso:</legend>
 						<div class="form-group">
 								<label class="col-sm-3 control-label" for="Old">Nombre* </label>
 								<div class="col-sm-9">
@@ -409,7 +409,7 @@ yearRange: "1970:<?php echo date('Y');?>"
 		 
 		<div class="panel panel-default">
                         <div class="panel-heading">
-                            Administrar Información de los Estudiantes  
+                            Administrar Información de los Cursos  
                         </div>
                         <div class="panel-body">
                             <div class="table-sorting table-responsive">
@@ -417,13 +417,12 @@ yearRange: "1970:<?php echo date('Y');?>"
                                     <thead>
                                         <tr>
                                             <th>#</th>
-                                            <th>Nombres</th>
-											<th>Apellidos</th>
-                                            <th>Carnet</th>
-                                            <th>Teléfono </th>
-											<th>Email</th>
-											<th>Ciudad</th>
-											<th>Zona</th>
+                                            <th>Nombre curso</th>
+											<th>Codigo del curso</th>
+                                            <th>Descripcion</th>
+                                            <th>Fecha de inicio </th>
+											<th>Fecha de finalizacion</th>
+											<th>Horarios</th>
 											<th>Acción</th>
                                         </tr>
                                     </thead>
@@ -443,7 +442,6 @@ yearRange: "1970:<?php echo date('Y');?>"
 											<td>'.$r['phone_number'].'</td>
 											<td>'.$r['email'].'</td>
 											<td>'.$r['city'].'</td>
-											<td>'.$r['zone'].'</td>
 											<td>
 											<a href="student.php?action=edit&id='.$r['student_id'].'" class="btn btn-success btn-xs"><span class="glyphicon glyphicon-edit"></span></a>
 											<a onclick="return confirm(\'Deseas realmente eliminar este registro, este proceso es irreversible\');" href="student.php?action=delete&id='.$r['student_id'].'" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove"></span></a> 

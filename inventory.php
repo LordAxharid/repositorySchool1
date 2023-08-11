@@ -120,10 +120,10 @@ include("php/header.php");
             <div id="page-inner">
                 <div class="row">
                     <div class="col-md-12">
-                        <h1 class="page-head-line">Estudiantes  
+                        <h1 class="page-head-line">Inventario  
 						<?php
 						echo (isset($_GET['action']) && @$_GET['action']=="add" || @$_GET['action']=="edit")?
-						' <a href="student.php" class="btn btn-primary btn-sm pull-right">Volver <i class="glyphicon glyphicon-arrow-right"></i></a>':'<a href="student.php?action=add" class="btn btn-primary btn-sm pull-right"><i class="glyphicon glyphicon-plus"></i> Agregar Estudiante </a>';
+						' <a href="inventory.php" class="btn btn-primary btn-sm pull-right">Volver <i class="glyphicon glyphicon-arrow-right"></i></a>':'<a href="inventory.php?action=add" class="btn btn-primary btn-sm pull-right"><i class="glyphicon glyphicon-plus"></i> Agregar Producto </a>';
 						?>
 						</h1>
                      
@@ -146,68 +146,51 @@ echo $errormsg;
             <div class="col-sm-10 col-sm-offset-1">
                <div class="panel panel-primary">
                         <div class="panel-heading">
-                           <?php echo ($action=="add")? "Agregar Estudiante": "Editar Estudiante"; ?>
+                           <?php echo ($action=="add")? "Agregar Producto": "Editar Producto"; ?>
                         </div>
 						<form action="student.php" method="post" id="signupForm1" class="form-horizontal">
                         <div class="panel-body">
 						<fieldset class="scheduler-border" >
-						 <legend  class="scheduler-border">Información Personal:</legend>
+						 <legend  class="scheduler-border">Información Producto:</legend>
 						<div class="form-group">
-								<label class="col-sm-3 control-label" for="Old">Nombre* </label>
+								<label class="col-sm-3 control-label" for="Old">Tipo* </label>
 								<div class="col-sm-9">
 									<input type="text" class="form-control" id="fname" name="fname" value="<?php echo $fname;?>"  />
 								</div>
 							</div>
 	
 						<div class="form-group">
-							<label class="col-sm-3 control-label" for="Old">Apellidos* </label>
+							<label class="col-sm-3 control-label" for="Old">Nombre del Producto* </label>
 							<div class="col-sm-9">
 								<input type="text" class="form-control" id="lname" name="lname" value="<?php echo $lname;?>"  />
 							</div>
 						</div>
 
 						<div class="form-group">
-							<label class="col-sm-3 control-label" for="Old">Número de Carnét de Identidad* </label>
+							<label class="col-sm-3 control-label" for="Old">Cantidad de productos ingresados* </label>
+							<div class="col-sm-9">
+								<input type="text" class="form-control" id="lname" name="lname" value="<?php echo $lname;?>"  />
+							</div>
+						</div>	
+				
+						 </fieldset>
+
+
+						 <fieldset>
+
+						 <div class="form-group">
+							<label class="col-sm-3 control-label" for="Old">Cantidad productos a egresar* </label>
 							<div class="col-sm-9">
 								<input type="text" class="form-control" id="lname" name="lname" value="<?php echo $lname;?>"  />
 							</div>
 						</div>
 
 						<div class="form-group">
-							<label class="col-sm-3 control-label" for="Old">N° de Celular* </label>
+							<label class="col-sm-3 control-label" for="Old">Razón o Detalle para el egreso manual* </label>
 							<div class="col-sm-9">
 								<input type="text" class="form-control" id="lname" name="lname" value="<?php echo $lname;?>"  />
 							</div>
-						</div>
-
-						<div class="form-group">
-							<label class="col-sm-3 control-label" for="Old">Correo Electrónico* </label>
-							<div class="col-sm-9">
-								<input type="text" class="form-control" id="lname" name="lname" value="<?php echo $lname;?>"  />
-							</div>
-						</div>
-
-						<div class="form-group">
-							<label class="col-sm-3 control-label" for="Old">Ciudad donde vive* </label>
-							<div class="col-sm-9">
-								<input type="text" class="form-control" id="lname" name="lname" value="<?php echo $lname;?>"  />
-							</div>
-						</div>
-
-						<div class="form-group">
-							<label class="col-sm-3 control-label" for="Old">Zona donde vive* </label>
-							<div class="col-sm-9">
-								<input type="text" class="form-control" id="lname" name="lname" value="<?php echo $lname;?>"  />
-							</div>
-						</div>
-
-						<div class="form-group">
-								<label class="col-sm-3 control-label" for="Old">Contacto* </label>
-								<div class="col-sm-9">
-									<input type="text" class="form-control" id="contact" name="contact" value="<?php echo $contact;?>" maxlength="10" />
-								</div>
-							</div>		
-						
+						</div>	
 
 						 </fieldset>
 						
@@ -215,11 +198,7 @@ echo $errormsg;
 								<div class="col-sm-8 col-sm-offset-2">
 								<input type="hidden" name="id" value="<?php echo $id;?>">
 								<input type="hidden" name="action" value="<?php echo $action;?>">
-								
 									<button type="submit" name="save" class="btn btn-primary">Guardar </button>
-								 
-								   
-								   
 								</div>
 							</div>
                          
@@ -245,11 +224,11 @@ echo $errormsg;
 		$( document ).ready( function () {			
 			
 		$( "#joindate" ).datepicker({
-dateFormat:"yy-mm-dd",
-changeMonth: true,
-changeYear: true,
-yearRange: "1970:<?php echo date('Y');?>"
-});	
+			dateFormat:"yy-mm-dd",
+			changeMonth: true,
+			changeYear: true,
+			yearRange: "1970:<?php echo date('Y');?>"
+			});	
 		
 
 		
@@ -409,7 +388,7 @@ yearRange: "1970:<?php echo date('Y');?>"
 		 
 		<div class="panel panel-default">
                         <div class="panel-heading">
-                            Administrar Información de los Estudiantes  
+                            Administrar Información del inventario  
                         </div>
                         <div class="panel-body">
                             <div class="table-sorting table-responsive">
@@ -417,14 +396,14 @@ yearRange: "1970:<?php echo date('Y');?>"
                                     <thead>
                                         <tr>
                                             <th>#</th>
-                                            <th>Nombres</th>
-											<th>Apellidos</th>
-                                            <th>Carnet</th>
-                                            <th>Teléfono </th>
-											<th>Email</th>
-											<th>Ciudad</th>
-											<th>Zona</th>
-											<th>Acción</th>
+                                            <th>Codigo</th>
+											<th>Tipo</th>
+                                            <th>Nombre del Producto</th>
+                                            <th>Egreso Automático </th>
+											<th>Egreso Manual</th>
+											<th>Saldo de Productos en Depósito</th>
+											<th>Detalles</th>
+											<th>Eliminar</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -434,7 +413,6 @@ yearRange: "1970:<?php echo date('Y');?>"
 									$i=1;
 									while($r = $q->fetch_assoc())
 									{
-									
 									echo '<tr>
                                             <td>'.$i.'</td>
                                             <td>'.$r['first_name'].'</td>
@@ -443,12 +421,8 @@ yearRange: "1970:<?php echo date('Y');?>"
 											<td>'.$r['phone_number'].'</td>
 											<td>'.$r['email'].'</td>
 											<td>'.$r['city'].'</td>
-											<td>'.$r['zone'].'</td>
-											<td>
-											<a href="student.php?action=edit&id='.$r['student_id'].'" class="btn btn-success btn-xs"><span class="glyphicon glyphicon-edit"></span></a>
-											<a onclick="return confirm(\'Deseas realmente eliminar este registro, este proceso es irreversible\');" href="student.php?action=delete&id='.$r['student_id'].'" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove"></span></a> 
-											<a href="student.php?action=edit&id='.$r['student_id'].'" class="btn btn-success btn-xs"><span class="glyphicon glyphicon-barcode"></span></a>
-											</td>	
+											<td><a href="inventory.php?action=edit&id='.$r['student_id'].'" class="btn btn-success btn-xs"><span class="glyphicon glyphicon-edit"></span></a></td>
+											<td><a onclick="return confirm(\'Deseas realmente eliminar este registro, este proceso es irreversible\');" href="student.php?action=delete&id='.$r['student_id'].'" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove"></span></a></td>	
 										</tr>';
 										$i++;
 									}

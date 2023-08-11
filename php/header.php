@@ -36,25 +36,36 @@
                     </li>
 					
 					 <li>
-                        <a href="branch.php"><i class="fa fa-university "></i>Bancos</a>
-                    </li>
-					
-					 <li>
                         <a href="student.php"><i class="fa fa-users "></i>Estudiantes</a>
                     </li>
+					
+					 <li>
+                        <a href="teachers.php"><i class="fa fa-users "></i>Profesores</a>
+                    </li>
 					<li>
-                        <a href="fees.php"><i class="fa fa-usd "></i>Pagos</a>
+                        <a href="courses.php"><i class="fa fa-book"></i>Cursos</a>
                     </li>
 					 <li>
-                        <a href="report.php"><i class="fa fa-file-text "></i>Reporte </a>
+                        <a href="enrollments.php"><i class="fa fa-calendar"></i>Inscripción a Cursos </a>
                     </li>
-					
-					 
-					
+
 					<li>
-                        <a href="setting.php"><i class="fa fa-cogs "></i>Configuración</a>
+                        <a href="fees.php"><i class="fa fa-usd "></i>Contable</a>
                     </li>
-					
+
+                    <li>
+                        <a href="academic.php"><i class="fa fa-file-text "></i>Académico</a>
+                    </li>
+                    <li>
+                        <a href="inventory.php"><i class="fa fa-archive "></i>Inventario</a>
+                    </li>
+                    <li>
+                        <a href="reservations.php"><i class="fa fa-calendar "></i>Reservas</a>
+                    </li>
+                    <li>
+                        <a href="reports.php"><i class="fa fa-file-text "></i>Reportes</a>
+                    </li>
+				
 					 <li>
                         <a href="logout.php"><i class="fa fa-power-off "></i>Cerrar Sesión</a>
                     </li>

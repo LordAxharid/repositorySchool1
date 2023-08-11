@@ -12,16 +12,10 @@ include("php/checklogin.php");
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Sistema de Pago Escolar</title>
 
-    <!-- BOOTSTRAP STYLES-->
-    <link href="css/bootstrap.css" rel="stylesheet" />
-    <!-- FONTAWESOME STYLES-->
-    <link href="css/font-awesome.css" rel="stylesheet" />
-       <!--CUSTOM BASIC STYLES-->
-    <link href="css/basic.css" rel="stylesheet" />
-    <!--CUSTOM MAIN STYLES-->
-    <link href="css/custom.css" rel="stylesheet" />
-    <!-- GOOGLE FONTS-->
-    <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css' />
+    
+    <?php  
+    include("layout/head-links.php");
+    ?>
 
 
 </head>
@@ -48,8 +42,69 @@ include("php/header.php");
                             </a>
                         </div>
                     </div>
-				
-				
+
+                    <div class="col-md-4">
+                        <div class="main-box mb-yellow">
+                            <a href="student.php">
+                                <i class="fa fa-users fa-5x"></i>
+                                <h5>Profesores</h5>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="main-box mb-blue">
+                            <a href="student.php">
+                                <i class="fa fa-book fa-5x"></i>
+                                <h5>Cursos</h5>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="main-box mb-blue">
+                            <a href="student.php">
+                                <i class="fa fa-calendar fa-5x"></i>
+                                <h5>Inscripción a Cursos</h5>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="main-box mb-red">
+                            <a href="student.php">
+                                <i class="fa fa-usd fa-5x"></i>
+                                <h5>Contable</h5>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="main-box mb-pink">
+                            <a href="student.php">
+                                <i class="fa fa-file-text fa-5x"></i>
+                                <h5>Académico</h5>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="main-box mb-dull">
+                            <a href="student.php">
+                                <i class="fa fa-archive fa-5x"></i>
+                                <h5>Inventario</h5>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="main-box mb-blue">
+                            <a href="student.php">
+                                <i class="fa fa-calendar fa-5x"></i>
+                                <h5>Reservas</h5>
+                            </a>
+                        </div>
+                    </div>
                    
 					
                     <div class="col-md-4">
@@ -86,16 +141,13 @@ include("php/header.php");
     <div id="footer-sec">
     Para más desarrollos gratuitos, accede a <a href="https://www.configuroweb.com/" target="_blank">ConfiguroWeb</a>
     </div>
-   
-   <script src="js/jquery-1.10.2.js"></script>	
-    <!-- BOOTSTRAP SCRIPTS -->
-    <script src="js/bootstrap.js"></script>
-    <!-- METISMENU SCRIPTS -->
-    <script src="js/jquery.metisMenu.js"></script>
-       <!-- CUSTOM SCRIPTS -->
-    <script src="js/custom1.js"></script>
-    
 
+    
+    <?php  
+    
+    include("layout/footer-links.php");
+
+    ?>
 
 </body>
 </html>

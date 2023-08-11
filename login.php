@@ -13,7 +13,7 @@ if($username=='' || $password=='')
 $error='All fields are required';
 }
 
-$sql = "select * from user where username='".$username."' and password = '".md5($password)."'";
+$sql = "select * from users where username='".$username."' and password = '".md5($password)."'";
 
 $q = $conn->query($sql);
 if($q->num_rows==1)
