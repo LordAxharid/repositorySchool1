@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1:3306
--- Tiempo de generación: 11-08-2023 a las 17:47:26
+-- Tiempo de generación: 12-08-2023 a las 02:32:17
 -- Versión del servidor: 8.0.31
 -- Versión de PHP: 8.0.26
 
@@ -142,17 +142,17 @@ CREATE TABLE IF NOT EXISTS `students` (
   `email` varchar(255) DEFAULT NULL,
   `city` varchar(255) DEFAULT NULL,
   `zone` varchar(255) DEFAULT NULL,
+  `id_user` int NOT NULL,
   `delete_status` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`student_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Volcado de datos para la tabla `students`
 --
 
-INSERT INTO `students` (`student_id`, `first_name`, `last_name`, `identity_card_number`, `phone_number`, `email`, `city`, `zone`, `delete_status`) VALUES
-(1, 'test', 'test1', '234523', '23536', 'test@test.com', 'Bogota', 'Chapinero', 0),
-(2, 'test', 'test1', '134523', '23536', 'test@test.com', 'Bogota', 'Chapinero', 0);
+INSERT INTO `students` (`student_id`, `first_name`, `last_name`, `identity_card_number`, `phone_number`, `email`, `city`, `zone`, `id_user`, `delete_status`) VALUES
+(7, 'asd', 'asd', '234', '124', 'jhonjairomedina11@gmail.com', 'BOGOTA', 'asasd', 44, 1);
 
 -- --------------------------------------------------------
 
@@ -186,10 +186,20 @@ CREATE TABLE IF NOT EXISTS `teachers` (
   `last_name` varchar(255) DEFAULT NULL,
   `identity_card_number` varchar(20) DEFAULT NULL,
   `phone_number` varchar(20) DEFAULT NULL,
+  `email` varchar(255) NOT NULL,
   `city` varchar(255) DEFAULT NULL,
   `zone` varchar(255) DEFAULT NULL,
+  `id_user` int NOT NULL,
+  `delete_status` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`teacher_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Volcado de datos para la tabla `teachers`
+--
+
+INSERT INTO `teachers` (`teacher_id`, `first_name`, `last_name`, `identity_card_number`, `phone_number`, `email`, `city`, `zone`, `id_user`, `delete_status`) VALUES
+(9, 'teach1', 'teach1', '341', '414', 'sdasd', 'asd', 'sd', 43, 1);
 
 -- --------------------------------------------------------
 
@@ -202,16 +212,23 @@ CREATE TABLE IF NOT EXISTS `users` (
   `id` int NOT NULL AUTO_INCREMENT,
   `username` varchar(255) NOT NULL,
   `password` varchar(255) NOT NULL,
-  `role` enum('admin','staff','professor','student') NOT NULL,
+  `rol` enum('god','admin','staff','professor','student') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `delete_status` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=49 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Volcado de datos para la tabla `users`
 --
 
-INSERT INTO `users` (`id`, `username`, `password`, `role`) VALUES
-(1, 'admin', '0192023a7bbd73250516f069df18b500', 'admin');
+INSERT INTO `users` (`id`, `username`, `password`, `rol`, `delete_status`) VALUES
+(1, 'god', '0192023a7bbd73250516f069df18b500', 'god', 0),
+(48, 'test', '49f0bad299687c62334182178bfd75d8', 'god', 1),
+(46, '', 'd41d8cd98f00b204e9800998ecf8427e', 'god', 1),
+(47, '', 'd41d8cd98f00b204e9800998ecf8427e', 'god', 1),
+(45, '', 'd41d8cd98f00b204e9800998ecf8427e', 'god', 1),
+(44, 'student', '49f0bad299687c62334182178bfd75d8', 'student', 1),
+(43, 'teach1', '49f0bad299687c62334182178bfd75d8', 'professor', 1);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

@@ -65,7 +65,9 @@
                     <li>
                         <a href="reports.php"><i class="fa fa-file-text "></i>Reportes</a>
                     </li>
-				
+                    <li>
+                        <a href="register.php"><i class="fa fa-file-text "></i>Registrar usuarios</a>
+                    </li>
 					 <li>
                         <a href="logout.php"><i class="fa fa-power-off "></i>Cerrar Sesión</a>
                     </li>

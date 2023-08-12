@@ -123,7 +123,7 @@ include("php/header.php");
                         <h1 class="page-head-line">Profesores  
 						<?php
 						echo (isset($_GET['action']) && @$_GET['action']=="add" || @$_GET['action']=="edit")?
-						' <a href="student.php" class="btn btn-primary btn-sm pull-right">Volver <i class="glyphicon glyphicon-arrow-right"></i></a>':'<a href="student.php?action=add" class="btn btn-primary btn-sm pull-right"><i class="glyphicon glyphicon-plus"></i> Agregar Profesor </a>';
+						' <a href="student.php" class="btn btn-primary btn-sm pull-right">Volver <i class="glyphicon glyphicon-arrow-right"></i></a>':'<a href="register.php?action=add" class="btn btn-primary btn-sm pull-right"><i class="glyphicon glyphicon-plus"></i> Agregar Profesor </a>';
 						?>
 						</h1>
                      
@@ -429,7 +429,7 @@ yearRange: "1970:<?php echo date('Y');?>"
                                     </thead>
                                     <tbody>
 									<?php
-									$sql = "select * from students where delete_status='0'";
+									$sql = "select * from teachers where delete_status='0'";
 									$q = $conn->query($sql);
 									$i=1;
 									while($r = $q->fetch_assoc())
@@ -445,9 +445,9 @@ yearRange: "1970:<?php echo date('Y');?>"
 											<td>'.$r['city'].'</td>
 											<td>'.$r['zone'].'</td>
 											<td>
-											<a href="student.php?action=edit&id='.$r['student_id'].'" class="btn btn-success btn-xs"><span class="glyphicon glyphicon-edit"></span></a>
-											<a onclick="return confirm(\'Deseas realmente eliminar este registro, este proceso es irreversible\');" href="student.php?action=delete&id='.$r['student_id'].'" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove"></span></a> 
-											<a href="student.php?action=edit&id='.$r['student_id'].'" class="btn btn-success btn-xs"><span class="glyphicon glyphicon-barcode"></span></a>
+											<a href="student.php?action=edit&id='.$r['teacher_id'].'" class="btn btn-success btn-xs"><span class="glyphicon glyphicon-edit"></span></a>
+											<a onclick="return confirm(\'Deseas realmente eliminar este registro, este proceso es irreversible\');" href="student.php?action=delete&id='.$r['teacher_id'].'" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove"></span></a> 
+											<a href="student.php?action=edit&id='.$r['teacher_id'].'" class="btn btn-success btn-xs"><span class="glyphicon glyphicon-barcode"></span></a>
 											</td>	
 										</tr>';
 										$i++;
