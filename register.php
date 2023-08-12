@@ -9,6 +9,7 @@ $emailid='';
 $username='';
 $username='';
 $password='';
+$rol='';
 $joindate = '';
 $remark='';
 $contact='';
@@ -79,9 +80,20 @@ echo '<script type="text/javascript">window.location="register.php?act=1";</scri
  }else
   if($_POST['action']=="update")
  {
- $id = mysqli_real_escape_string($conn,$_POST['id']);	
-   $sql = $conn->query("UPDATE  students  SET  branch  = '$branch', address  = '$address', detail  = '$detail'  WHERE  id  = '$id'");
-   echo '<script type="text/javascript">window.location="student.php?act=2";</script>';
+   // Verifica si el campo de contraseña ha sido modificado
+   $id = $_POST['id'];
+        if (!empty($_POST['password'])) {
+            $password = mysqli_real_escape_string($conn, md5($_POST['password']));
+            $sql = $conn->query("UPDATE users SET username = '$username', password = '$password', rol = '$rol' WHERE id = '$id'");
+        } else {
+            $sql = $conn->query("UPDATE users SET username = '$username', rol = '$rol' WHERE id = '$id'");
+        }
+
+        if ($sql) {
+            echo '<script type="text/javascript">window.location="register.php?act=2";</script>';
+        } else {
+            echo "Error al actualizar la base de datos: " . $conn->error;
+        }
  }
 
 }
@@ -125,7 +137,7 @@ $action = "add";
 if(isset($_GET['action']) && $_GET['action']=="edit" ){
 $id = isset($_GET['id'])?mysqli_real_escape_string($conn,$_GET['id']):'';
 
-$sqlEdit = $conn->query("SELECT * FROM students WHERE student_id='".$id."'");
+$sqlEdit = $conn->query("SELECT * FROM users WHERE id='".$id."'");
 if($sqlEdit->num_rows)
 {
 $rowsEdit = $sqlEdit->fetch_assoc();
@@ -187,10 +199,75 @@ echo $errormsg;
                     </div>
                 </div>
 				
-				
+		        <?php 
+		 if(isset($_GET['action']) && @$_GET['action']=="edit")
+		 {
+		?>
+        
+        <script type="text/javascript" src="js/validation/jquery.validate.min.js"></script>
+                <div class="row">
+            <div class="col-sm-10 col-sm-offset-1">
+               <div class="panel panel-primary">
+                        <div class="panel-heading">
+                           <?php echo ($action=="add")? "Agregar Usuario": "Editar Usuario"; ?>
+                        </div>
+						<form action="register.php" method="post" id="signupForm1" class="form-horizontal">
+                        <div class="panel-body">
+						<fieldset class="scheduler-border" >
+						 <legend  class="scheduler-border">Información Usuario:</legend>
+						<div class="form-group">
+								<label class="col-sm-3 control-label" for="username">Nombre* </label>
+								<div class="col-sm-9">
+									<input type="text" class="form-control" id="username" name="username" value="<?php echo $username;?>" required  />
+								</div>
+							</div>
+
+						<div class="form-group">
+							<label class="col-sm-3 control-label" for="password">Contraseña* </label>
+							<div class="col-sm-9">
+								<input type="text" class="form-control" id="password" name="password" />
+							</div>
+						</div>	
+                        <div class="form-group">
+							<label class="col-sm-3 control-label" for="Rol">Rol* </label>
+							<div class="col-sm-9">
+                            <select id="rol" name="rol" required>
+                                <option selected="selected" value="<?php echo $rol;?>"><?php echo $rol;?></option>
+                                <option value="god">Dios</option>
+                                <option value="admin">Administrador</option>
+                                <option value="staff">Personal administrativo</option>
+                                <option value="professor">Profesor</option>
+                                <option value="student">Alumno</option>
+                            </select>
+							</div>
+						</div>	
+
+                         </fieldset>
+                        </div>
+						<div class="form-group">
+								<div class="col-sm-8 col-sm-offset-2">
+								<input type="hidden" name="id" value="<?php echo $id;?>">
+								<input type="hidden" name="action" value="<?php echo $action;?>">
+									<button type="submit" name="save" class="btn btn-primary">Guardar </button>
+								</div>
+							</div>
+        
+                           
+                         </div>
+							</form>
+							
+                        </div>
+                            </div>
+            
+			
+                </div>
+
+        <?php 
+         }
+        ?>
 				
         <?php 
-		 if(isset($_GET['action']) && @$_GET['action']=="add" || @$_GET['action']=="edit")
+		 if(isset($_GET['action']) && @$_GET['action']=="add")
 		 {
 		?>
 		
@@ -215,14 +292,14 @@ echo $errormsg;
 						<div class="form-group">
 							<label class="col-sm-3 control-label" for="password">Contraseña* </label>
 							<div class="col-sm-9">
-								<input type="text" class="form-control" id="password" name="password" value="<?php echo $password;?>" required />
+								<input type="text" class="form-control" id="password" name="password" required />
 							</div>
 						</div>	
-
                         <div class="form-group">
 							<label class="col-sm-3 control-label" for="Rol">Rol* </label>
 							<div class="col-sm-9">
                             <select id="rol" name="rol" required>
+                                <option selected="selected" value="<?php echo $rol;?>"><?php echo $rol;?></option>
                                 <option value="god">Dios</option>
                                 <option value="admin">Administrador</option>
                                 <option value="staff">Personal administrativo</option>

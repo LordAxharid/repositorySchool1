@@ -20,53 +20,23 @@ $branch='';
 if(isset($_POST['save']))
 {
 
-$fname = mysqli_real_escape_string($conn,$_POST['fname']);
-$lname = mysqli_real_escape_string($conn,$_POST['lname']);
-$joindate = mysqli_real_escape_string($conn,$_POST['joindate']);
+$first_name = mysqli_real_escape_string($conn,$_POST['first_name']);
+$last_name = mysqli_real_escape_string($conn,$_POST['last_name']);
+$card_number = mysqli_real_escape_string($conn,$_POST['card_number']);
+$phone_number = mysqli_real_escape_string($conn,$_POST['phone_number']);
+$email = mysqli_real_escape_string($conn,$_POST['email']);
+$city = mysqli_real_escape_string($conn,$_POST['city']);
+$zone = mysqli_real_escape_string($conn,$_POST['zone']);
+$id = mysqli_real_escape_string($conn,$_POST['id']);
 
-$contact = mysqli_real_escape_string($conn,$_POST['contact']);
-$about = mysqli_real_escape_string($conn,$_POST['about']);
-$emailid = mysqli_real_escape_string($conn,$_POST['emailid']);
-$branch = mysqli_real_escape_string($conn,$_POST['branch']);
+ $sql = "UPDATE students SET first_name = '$first_name', last_name = '$last_name', identity_card_number = '$card_number', phone_number = '$phone_number', email = '$email', city = '$city', zone = '$zone' WHERE student_id = '$id'";
 
-
- if($_POST['action']=="add")
- {
- $remark = mysqli_real_escape_string($conn,$_POST['remark']);
- $fees = mysqli_real_escape_string($conn,$_POST['fees']);
- $advancefees = mysqli_real_escape_string($conn,$_POST['advancefees']);
- $balance = $fees-$advancefees;
- 
-  $q1 = $conn->query("INSERT INTO student (fname,lname,joindate,contact,about,emailid,branch,balance,fees) VALUES ('$fname','$lname','$joindate','$contact','$about','$emailid','$branch','$balance','$fees')") ;
-  
-  $sid = $conn->insert_id;
-  
- $conn->query("INSERT INTO  fees_transaction (stdid,paid,submitdate,transcation_remark) VALUES ('$sid','$advancefees','$joindate','$remark')") ;
-    
-   echo '<script type="text/javascript">window.location="student.php?act=1";</script>';
- 
- }else
-  if($_POST['action']=="update")
- {
- $id = mysqli_real_escape_string($conn,$_POST['id']);	
-   $sql = $conn->query("UPDATE  students  SET  branch  = '$branch', address  = '$address', detail  = '$detail'  WHERE  id  = '$id'");
-   echo '<script type="text/javascript">window.location="student.php?act=2";</script>';
+ if ($conn->query($sql)) {
+	 echo '<script type="text/javascript">window.location="student.php?act=2";</script>';
+ } else {
+	 echo "Error al actualizar la base de datos: " . $conn->error;
  }
-
-
-
 }
-
-
-
-
-if(isset($_GET['action']) && $_GET['action']=="delete"){
-
-$conn->query("UPDATE students set delete_status = '1'  WHERE student_id='".$_GET['id']."'");	
-header("location: student.php?act=3");
-
-}
-
 
 $action = "add";
 if(isset($_GET['action']) && $_GET['action']=="edit" ){
@@ -134,7 +104,58 @@ echo $errormsg;
                     </div>
                 </div>
 				
-				
+				<?php 
+		 if(isset($_GET['action']) && @$_GET['action']=="generate-carnet")
+		 {
+			// Incluye la librería TCPDF
+			require_once('tcpdf/tcpdf.php');
+			ob_clean();
+			// Obtén el student_id de la URL
+			$student_id = isset($_GET['id']) ? $_GET['id'] : null;
+
+			// Verifica si se proporcionó un student_id válido
+			if (!$student_id) {
+				die('ID de estudiante no proporcionado.');
+			}
+
+			// Obtén los datos del estudiante de tu base de datos según el $student_id
+			// (Debes implementar esta parte)
+
+			// Crea una instancia de TCPDF
+			$pdf = new TCPDF('P', 'mm', 'A4', true, 'UTF-8', false);
+
+			// Configura el título del documento
+			$pdf->SetTitle('Carné de Estudiante');
+
+			// Agrega una página al PDF
+			$pdf->AddPage();
+
+			// Configura la fuente y el tamaño del texto
+			$pdf->SetFont('helvetica', 'B', 16);
+
+			// Agrega el contenido al PDF
+			$pdf->Cell(0, 10, 'Carné de Estudiante', 0, 1, 'C');
+			$pdf->Ln(10);
+
+			// Agrega los datos del estudiante
+			$pdf->SetFont('helvetica', '', 12);
+			$pdf->Cell(50, 10, 'Nombre:', 0);
+			$pdf->Cell(0, 10, 'test1', 0, 1);
+
+			$pdf->Cell(50, 10, 'Carnet de Identidad:', 0);
+			$pdf->Cell(0, 10, 'test1', 0, 1);
+
+			// ... Agrega más campos según necesites ...
+
+			// Genera el contenido del PDF
+			$output = $pdf->Output('carnet_estudiante.pdf', 'S');
+
+			// Muestra el PDF en el navegador
+			header('Content-Type: application/pdf');
+			header('Content-Disposition: inline; filename="carnet_estudiante.pdf"');
+			echo $output;
+		 }
+		?>
 				
         <?php 
 		 if(isset($_GET['action']) && @$_GET['action']=="add" || @$_GET['action']=="edit")
@@ -153,61 +174,53 @@ echo $errormsg;
 						<fieldset class="scheduler-border" >
 						 <legend  class="scheduler-border">Información Personal:</legend>
 						<div class="form-group">
-								<label class="col-sm-3 control-label" for="Old">Nombre* </label>
+								<label class="col-sm-3 control-label" for="first_name">Nombre* </label>
 								<div class="col-sm-9">
-									<input type="text" class="form-control" id="fname" name="fname" value="<?php echo $fname;?>"  />
+									<input type="text" class="form-control" id="first_name" name="first_name" value="<?php echo $first_name;?>"  />
 								</div>
 							</div>
 	
 						<div class="form-group">
-							<label class="col-sm-3 control-label" for="Old">Apellidos* </label>
+							<label class="col-sm-3 control-label" for="last_name">Apellidos* </label>
 							<div class="col-sm-9">
-								<input type="text" class="form-control" id="lname" name="lname" value="<?php echo $lname;?>"  />
+								<input type="text" class="form-control" id="last_name" name="last_name" value="<?php echo $last_name;?>"  />
 							</div>
 						</div>
 
 						<div class="form-group">
-							<label class="col-sm-3 control-label" for="Old">Número de Carnét de Identidad* </label>
+							<label class="col-sm-3 control-label" for="card_number">Número de Carnét de Identidad* </label>
 							<div class="col-sm-9">
-								<input type="text" class="form-control" id="lname" name="lname" value="<?php echo $lname;?>"  />
+								<input type="text" class="form-control" id="card_number" name="card_number" value="<?php echo $identity_card_number;?>"  />
 							</div>
 						</div>
 
 						<div class="form-group">
-							<label class="col-sm-3 control-label" for="Old">N° de Celular* </label>
+							<label class="col-sm-3 control-label" for="phone_number">N° de Celular* </label>
 							<div class="col-sm-9">
-								<input type="text" class="form-control" id="lname" name="lname" value="<?php echo $lname;?>"  />
+								<input type="text" class="form-control" id="phone_number" name="phone_number" value="<?php echo $phone_number;?>"  />
 							</div>
 						</div>
 
 						<div class="form-group">
-							<label class="col-sm-3 control-label" for="Old">Correo Electrónico* </label>
+							<label class="col-sm-3 control-label" for="email">Correo Electrónico* </label>
 							<div class="col-sm-9">
-								<input type="text" class="form-control" id="lname" name="lname" value="<?php echo $lname;?>"  />
+								<input type="text" class="form-control" id="email" name="email" value="<?php echo $email;?>"  />
 							</div>
 						</div>
 
 						<div class="form-group">
-							<label class="col-sm-3 control-label" for="Old">Ciudad donde vive* </label>
+							<label class="col-sm-3 control-label" for="city">Ciudad donde vive* </label>
 							<div class="col-sm-9">
-								<input type="text" class="form-control" id="lname" name="lname" value="<?php echo $lname;?>"  />
+								<input type="text" class="form-control" id="city" name="city" value="<?php echo $city;?>"  />
 							</div>
 						</div>
 
 						<div class="form-group">
-							<label class="col-sm-3 control-label" for="Old">Zona donde vive* </label>
+							<label class="col-sm-3 control-label" for="zone">Zona donde vive* </label>
 							<div class="col-sm-9">
-								<input type="text" class="form-control" id="lname" name="lname" value="<?php echo $lname;?>"  />
+								<input type="text" class="form-control" id="zone" name="zone" value="<?php echo $zone;?>"  />
 							</div>
 						</div>
-
-						<div class="form-group">
-								<label class="col-sm-3 control-label" for="Old">Contacto* </label>
-								<div class="col-sm-9">
-									<input type="text" class="form-control" id="contact" name="contact" value="<?php echo $contact;?>" maxlength="10" />
-								</div>
-							</div>		
-						
 
 						 </fieldset>
 						
@@ -446,15 +459,13 @@ yearRange: "1970:<?php echo date('Y');?>"
 											<td>'.$r['zone'].'</td>
 											<td>
 											<a href="student.php?action=edit&id='.$r['student_id'].'" class="btn btn-success btn-xs"><span class="glyphicon glyphicon-edit"></span></a>
-											<a onclick="return confirm(\'Deseas realmente eliminar este registro, este proceso es irreversible\');" href="student.php?action=delete&id='.$r['student_id'].'" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove"></span></a> 
-											<a href="student.php?action=edit&id='.$r['student_id'].'" class="btn btn-success btn-xs"><span class="glyphicon glyphicon-barcode"></span></a>
+											<a href="student.php?action=generate-carnet&id='.$r['student_id'].'" class="btn btn-success btn-xs"><span class="glyphicon glyphicon-barcode"></span></a>
 											</td>	
 										</tr>';
 										$i++;
 									}
 									?>
-									
-                                        
+								   
                                         
                                     </tbody>
                                 </table>
