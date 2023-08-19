@@ -56,6 +56,15 @@ $_GET['action']="";
 }
 
 
+if(isset($_GET['action']) && $_GET['action']=="delete"){
+
+	$conn->query("UPDATE students set delete_status = '1'  WHERE student_id='".$_GET['id']."'");	
+	$conn->query("UPDATE users set delete_status = '1'  WHERE id='".$_GET['userId']."'");	
+	header("location: student.php?act=3");
+	
+}
+
+
 if(isset($_REQUEST['act']) && @$_REQUEST['act']=="1")
 {
 $errormsg = "<div class='alert alert-success'> <a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><strong>Excelente!</strong> Estudiante Agregado Exitósamente</div>";
@@ -118,43 +127,69 @@ echo $errormsg;
 				die('ID de estudiante no proporcionado.');
 			}
 
-			// Obtén los datos del estudiante de tu base de datos según el $student_id
-			// (Debes implementar esta parte)
+			$sql = $conn->query("SELECT * FROM students WHERE student_id='".$student_id."'");
+			$rowsEdit = $sql->fetch_assoc();
+			extract($rowsEdit);
 
-			// Crea una instancia de TCPDF
-			$pdf = new TCPDF('P', 'mm', 'A4', true, 'UTF-8', false);
+		// Crea una instancia de TCPDF
+		$pdf = new TCPDF('P', 'mm', 'A4', true, 'UTF-8', false);
 
-			// Configura el título del documento
-			$pdf->SetTitle('Carné de Estudiante');
+		// Configura el título del documento
+		$pdf->SetTitle('Carné de Estudiante');
 
-			// Agrega una página al PDF
-			$pdf->AddPage();
+		// Agrega una página al PDF
+		$pdf->AddPage();
 
-			// Configura la fuente y el tamaño del texto
-			$pdf->SetFont('helvetica', 'B', 16);
+		// Dibuja las líneas alrededor del contenido
+		$pdf->SetLineWidth(0.5); // Ancho de línea
 
-			// Agrega el contenido al PDF
-			$pdf->Cell(0, 10, 'Carné de Estudiante', 0, 1, 'C');
-			$pdf->Ln(10);
+		// Línea superior
+		$pdf->Line(10, 10, 200, 10);
 
-			// Agrega los datos del estudiante
-			$pdf->SetFont('helvetica', '', 12);
-			$pdf->Cell(50, 10, 'Nombre:', 0);
-			$pdf->Cell(0, 10, 'test1', 0, 1);
+		// Línea izquierda
+		$pdf->Line(10, 10, 10, 150);
 
-			$pdf->Cell(50, 10, 'Carnet de Identidad:', 0);
-			$pdf->Cell(0, 10, 'test1', 0, 1);
+		// Línea derecha
+		$pdf->Line(200, 10, 200, 150);
 
-			// ... Agrega más campos según necesites ...
+		// Línea inferior
+		$pdf->Line(10, 150, 200, 150);
 
-			// Genera el contenido del PDF
-			$output = $pdf->Output('carnet_estudiante.pdf', 'S');
+		// Agrega el fondo del carné
+		$pdf->Image('ruta_del_fondo.jpg', 0, 0, 210, 297, '', '', '', false, 300, '', false, false, 0);
 
-			// Muestra el PDF en el navegador
-			header('Content-Type: application/pdf');
-			header('Content-Disposition: inline; filename="carnet_estudiante.pdf"');
-			echo $output;
-		 }
+		// Agrega la imagen del estudiante (por ejemplo, foto)
+	    $pdf->Image('img/colegioLogo.png', 40, 20, 80, 80, 'PNG', '', '', true, 150, '', false, false, 0);
+
+		// Agrega los datos de la institucion
+		$pdf->SetFont('helvetica', 'B', 16);
+		$pdf->SetTextColor(0, 0, 0);
+		$pdf->SetXY(130, 20);
+		$pdf->Cell(1, 10, 'Nombre Institución', 0);
+		$pdf->Cell(0, 30, 'Dirección', 0, 1);
+		$pdf->SetXY(130, 40);
+		$pdf->Cell(1, 10, 'Teléfono', 0);
+		$pdf->Cell(0, 30, 'Número correlativo', 0, 1);
+		// Agrega los datos del estudiante
+		$pdf->SetFont('helvetica', 'B', 18);
+		$pdf->SetTextColor(0, 0, 0);
+		$pdf->SetXY(10, 120);
+		$pdf->Cell(0, 0, $rowsEdit['first_name'].' '.$rowsEdit['last_name'], 0, 2, 'C');
+
+		$pdf->SetFont('helvetica', 'B', 16);
+		$pdf->SetXY(10, 130);
+		$pdf->Cell(0, 0, 'Numero Carnet: ' . $rowsEdit['identity_card_number'], 0, 2, 'C');
+
+		// ... Agrega más campos según necesites ...
+
+		// Genera el contenido del PDF
+		$output = $pdf->Output('carnet_estudiante.pdf', 'S');
+
+		// Muestra el PDF en el navegador
+		header('Content-Type: application/pdf');
+		header('Content-Disposition: attachment; filename="carnet_estudiante.pdf"');
+		echo $output;
+		}
 		?>
 				
         <?php 
@@ -459,6 +494,7 @@ yearRange: "1970:<?php echo date('Y');?>"
 											<td>'.$r['zone'].'</td>
 											<td>
 											<a href="student.php?action=edit&id='.$r['student_id'].'" class="btn btn-success btn-xs"><span class="glyphicon glyphicon-edit"></span></a>
+											<a onclick="return confirm(\'Deseas realmente eliminar este registro, este proceso es irreversible\');" href="student.php?action=delete&id='.$r['student_id'].'&userId='.$r['id_user'].'" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove"></span></a> 
 											<a href="student.php?action=generate-carnet&id='.$r['student_id'].'" class="btn btn-success btn-xs"><span class="glyphicon glyphicon-barcode"></span></a>
 											</td>	
 										</tr>';

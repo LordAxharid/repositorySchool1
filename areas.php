@@ -5,37 +5,29 @@ $errormsg = '';
 $action = "add";
 
 $id="";
-$emailid='';
-$fname='';
-$lname='';
-$joindate = '';
-$remark='';
-$contact='';
-$balance = 0;
-$fees='';
-$about = '';
-$branch='';
+$name='';
 
 
 if(isset($_POST['save']))
 {
 
-	$first_name = mysqli_real_escape_string($conn,$_POST['first_name']);
-	$last_name = mysqli_real_escape_string($conn,$_POST['last_name']);
-	$card_number = mysqli_real_escape_string($conn,$_POST['card_number']);
-	$phone_number = mysqli_real_escape_string($conn,$_POST['phone_number']);
-	$email = mysqli_real_escape_string($conn,$_POST['email']);
-	$city = mysqli_real_escape_string($conn,$_POST['city']);
-	$zone = mysqli_real_escape_string($conn,$_POST['zone']);
-	$id = mysqli_real_escape_string($conn,$_POST['id']);
-	
-	 $sql = "UPDATE teachers SET first_name = '$first_name', last_name = '$last_name', identity_card_number = '$card_number', phone_number = '$phone_number', email = '$email', city = '$city', zone = '$zone' WHERE teacher_id = '$id'";
-	
-	 if ($conn->query($sql)) {
-		 echo '<script type="text/javascript">window.location="teachers.php?act=2";</script>';
-	 } else {
-		 echo "Error al actualizar la base de datos: " . $conn->error;
-	 }
+$name = mysqli_real_escape_string($conn,$_POST['name']);
+
+ if($_POST['action']=="add")
+ {
+  $q1 = $conn->query("INSERT INTO areas (name) VALUES ('$name')") ;      
+   echo '<script type="text/javascript">window.location="areas.php?act=1";</script>';
+ 
+ }else
+  if($_POST['action']=="update")
+ {
+ $id = mysqli_real_escape_string($conn,$_POST['id']);	
+   $sql = $conn->query("UPDATE  areas  SET  name  = '$name' WHERE  id  = '$id'");
+   echo '<script type="text/javascript">window.location="areas.php?act=2";</script>';
+ }
+
+
+
 }
 
 
@@ -43,9 +35,8 @@ if(isset($_POST['save']))
 
 if(isset($_GET['action']) && $_GET['action']=="delete"){
 
-$conn->query("UPDATE teachers set delete_status = '1'  WHERE teacher_id='".$_GET['id']."'");	
-$conn->query("UPDATE users set delete_status = '1'  WHERE id='".$_GET['userId']."'");	
-header("location: teachers.php?act=3");
+$conn->query("UPDATE areas set delete_status = '1'  WHERE id='".$_GET['id']."'");	
+header("location: areas.php?act=3");
 
 }
 
@@ -54,7 +45,7 @@ $action = "add";
 if(isset($_GET['action']) && $_GET['action']=="edit" ){
 $id = isset($_GET['id'])?mysqli_real_escape_string($conn,$_GET['id']):'';
 
-$sqlEdit = $conn->query("SELECT * FROM teachers WHERE teacher_id='".$id."'");
+$sqlEdit = $conn->query("SELECT * FROM areas WHERE id='".$id."'");
 if($sqlEdit->num_rows)
 {
 $rowsEdit = $sqlEdit->fetch_assoc();
@@ -70,14 +61,14 @@ $_GET['action']="";
 
 if(isset($_REQUEST['act']) && @$_REQUEST['act']=="1")
 {
-$errormsg = "<div class='alert alert-success'> <a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><strong>Excelente!</strong> Profesor Agregado Exitósamente</div>";
+$errormsg = "<div class='alert alert-success'> <a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><strong>Excelente!</strong> Area Agregada Exitósamente</div>";
 }else if(isset($_REQUEST['act']) && @$_REQUEST['act']=="2")
 {
-$errormsg = "<div class='alert alert-success'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a> <strong>Excelente!</strong> Profesor Editado Exitósamente</div>";
+$errormsg = "<div class='alert alert-success'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a> <strong>Excelente!</strong> Area Editada Exitósamente</div>";
 }
 else if(isset($_REQUEST['act']) && @$_REQUEST['act']=="3")
 {
-$errormsg = "<div class='alert alert-success'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><strong>Excelente!</strong> Profesor Eliminado Exitósamente</div>";
+$errormsg = "<div class='alert alert-success'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><strong>Excelente!</strong> Area Eliminada Exitósamente</div>";
 }
 
 ?>
@@ -102,10 +93,11 @@ include("php/header.php");
             <div id="page-inner">
                 <div class="row">
                     <div class="col-md-12">
-                        <h1 class="page-head-line">Profesores  
+                        <h1 class="page-head-line">
+                            Area  
 						<?php
 						echo (isset($_GET['action']) && @$_GET['action']=="add" || @$_GET['action']=="edit")?
-						' <a href="teachers.php" class="btn btn-primary btn-sm pull-right">Volver <i class="glyphicon glyphicon-arrow-right"></i></a>':'<a href="register.php?action=add" class="btn btn-primary btn-sm pull-right"><i class="glyphicon glyphicon-plus"></i> Agregar Profesor </a>';
+						' <a href="areas.php" class="btn btn-primary btn-sm pull-right">Volver <i class="glyphicon glyphicon-arrow-right"></i></a>':'<a href="areas.php?action=add" class="btn btn-primary btn-sm pull-right"><i class="glyphicon glyphicon-plus"></i> Agregar Area </a>';
 						?>
 						</h1>
                      
@@ -123,77 +115,30 @@ echo $errormsg;
 		 {
 		?>
 		
-		<script type="text/javascript" src="js/validation/jquery.validate.min.js"></script>
+			<script type="text/javascript" src="js/validation/jquery.validate.min.js"></script>
                 <div class="row">
             <div class="col-sm-10 col-sm-offset-1">
                <div class="panel panel-primary">
                         <div class="panel-heading">
-                           <?php echo ($action=="add")? "": "Editar Profesor"; ?>
+                           <?php echo ($action=="add")? "Agregar Area": "Editar Producto"; ?>
                         </div>
-						<form action="teachers.php" method="post" id="signupForm1" class="form-horizontal">
+						<form action="areas.php" method="post" id="signupForm1" class="form-horizontal">
                         <div class="panel-body">
 						<fieldset class="scheduler-border" >
-						 <legend  class="scheduler-border">Información Personal:</legend>
+						 <legend  class="scheduler-border">Información Area:</legend>
 						<div class="form-group">
-								<label class="col-sm-3 control-label" for="first_name">Nombre* </label>
+								<label class="col-sm-3 control-label" for="name">Nombre* </label>
 								<div class="col-sm-9">
-									<input type="text" class="form-control" id="first_name" name="first_name" value="<?php echo $first_name;?>"  />
+									<input type="text" class="form-control" id="name" name="name" value="<?php echo $name;?>"  />
 								</div>
 							</div>
-	
-						<div class="form-group">
-							<label class="col-sm-3 control-label" for="last_name">Apellidos* </label>
-							<div class="col-sm-9">
-								<input type="text" class="form-control" id="last_name" name="last_name" value="<?php echo $last_name;?>"  />
-							</div>
-						</div>
-
-						<div class="form-group">
-							<label class="col-sm-3 control-label" for="card_number">Número de Carnét de Identidad* </label>
-							<div class="col-sm-9">
-								<input type="text" class="form-control" id="card_number" name="card_number" value="<?php echo $identity_card_number;?>"  />
-							</div>
-						</div>
-
-						<div class="form-group">
-							<label class="col-sm-3 control-label" for="phone_number">N° de Celular* </label>
-							<div class="col-sm-9">
-								<input type="text" class="form-control" id="phone_number" name="phone_number" value="<?php echo $phone_number;?>"  />
-							</div>
-						</div>
-
-						<div class="form-group">
-							<label class="col-sm-3 control-label" for="email">Correo Electrónico* </label>
-							<div class="col-sm-9">
-								<input type="text" class="form-control" id="email" name="email" value="<?php echo $email;?>"  />
-							</div>
-						</div>
-
-						<div class="form-group">
-							<label class="col-sm-3 control-label" for="city">Ciudad donde vive* </label>
-							<div class="col-sm-9">
-								<input type="text" class="form-control" id="city" name="city" value="<?php echo $city;?>"  />
-							</div>
-						</div>
-
-						<div class="form-group">
-							<label class="col-sm-3 control-label" for="zone">Zona donde vive* </label>
-							<div class="col-sm-9">
-								<input type="text" class="form-control" id="zone" name="zone" value="<?php echo $zone;?>"  />
-							</div>
-						</div>
-
 						 </fieldset>
 						
 						<div class="form-group">
 								<div class="col-sm-8 col-sm-offset-2">
 								<input type="hidden" name="id" value="<?php echo $id;?>">
 								<input type="hidden" name="action" value="<?php echo $action;?>">
-								
 									<button type="submit" name="save" class="btn btn-primary">Guardar </button>
-								 
-								   
-								   
 								</div>
 							</div>
                          
@@ -219,11 +164,11 @@ echo $errormsg;
 		$( document ).ready( function () {			
 			
 		$( "#joindate" ).datepicker({
-dateFormat:"yy-mm-dd",
-changeMonth: true,
-changeYear: true,
-yearRange: "1970:<?php echo date('Y');?>"
-});	
+			dateFormat:"yy-mm-dd",
+			changeMonth: true,
+			changeYear: true,
+			yearRange: "1970:<?php echo date('Y');?>"
+			});	
 		
 
 		
@@ -383,7 +328,7 @@ yearRange: "1970:<?php echo date('Y');?>"
 		 
 		<div class="panel panel-default">
                         <div class="panel-heading">
-                            Administrar Información de los Profesores  
+                            Administrar Información de las areas  
                         </div>
                         <div class="panel-body">
                             <div class="table-sorting table-responsive">
@@ -391,37 +336,22 @@ yearRange: "1970:<?php echo date('Y');?>"
                                     <thead>
                                         <tr>
                                             <th>#</th>
-                                            <th>Nombres</th>
-											<th>Apellidos</th>
-                                            <th>Carnet</th>
-                                            <th>Teléfono </th>
-											<th>Email</th>
-											<th>Ciudad</th>
-											<th>Zona</th>
-											<th>Acción</th>
+                                            <th>Nombre</th>
+											<th>Acciones</th>
                                         </tr>
                                     </thead>
                                     <tbody>
 									<?php
-									$sql = "select * from teachers where delete_status='0'";
+									$sql = "select * from areas where delete_status='0'";
 									$q = $conn->query($sql);
 									$i=1;
 									while($r = $q->fetch_assoc())
 									{
-									
 									echo '<tr>
                                             <td>'.$i.'</td>
-                                            <td>'.$r['first_name'].'</td>
-											<td>'.$r['last_name'].'</td>
-											<td>'.$r['identity_card_number'].'</td>
-											<td>'.$r['phone_number'].'</td>
-											<td>'.$r['email'].'</td>
-											<td>'.$r['city'].'</td>
-											<td>'.$r['zone'].'</td>
-											<td>
-											<a href="teachers.php?action=edit&id='.$r['teacher_id'].'" class="btn btn-success btn-xs"><span class="glyphicon glyphicon-edit"></span></a>
-											<a onclick="return confirm(\'Deseas realmente eliminar este registro, este proceso es irreversible\');" href="teachers.php?action=delete&id='.$r['teacher_id'].'&userId='.$r['id_user'].'" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove"></span></a> 
-											</td>	
+                                            <td>'.$r['name'].'</td>
+											<td><a href="areas.php?action=edit&id='.$r['id'].'" class="btn btn-success btn-xs"><span class="glyphicon glyphicon-edit"></span></a>
+											<a onclick="return confirm(\'Deseas realmente eliminar este registro, este proceso es irreversible\');" href="areas.php?action=delete&id='.$r['id'].'" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove"></span></a></td>	
 										</tr>';
 										$i++;
 									}

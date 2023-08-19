@@ -14,6 +14,7 @@ $balance = 0;
 $fees='';
 $about = '';
 $branch='';
+$date='';
 
 ?>
 
@@ -51,58 +52,66 @@ include("php/header.php");
         <div class="row">
             <div class="col-sm-10 col-sm-offset-1">
                <div class="panel panel-primary">
-						<form action="student.php" method="post" id="signupForm1" class="form-horizontal">
+						<form action="fees.php" method="post" id="signupForm1" class="form-horizontal">
                         <div class="panel-body">
 						<fieldset class="scheduler-border" >
 						 <legend  class="scheduler-border">Agregar ingreso:</legend>
 						<div class="form-group">
 								<label class="col-sm-3 control-label" for="Old">Fecha* </label>
 								<div class="col-sm-9">
-									<input type="text" class="form-control" id="fname" name="fname" value="<?php echo $fname;?>"  />
+									<input type="text" class="form-control" id="date" name="date" value="<?php echo $date;?>"  />
 								</div>
 							</div>
 	
-						<div class="form-group">
-							<label class="col-sm-3 control-label" for="Old">Curso* </label>
-							<div class="col-sm-9">
-								<input type="text" class="form-control" id="lname" name="lname" value="<?php echo $lname;?>"  />
-							</div>
-						</div>
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label" for="course_id">Curso*</label>
+                                <div class="col-sm-9">
+                                    <select class="form-control" id="course_id" name="course_id">
+                                        <!-- Options will be loaded dynamically using JavaScript -->
+                                    </select>
+                                </div>
+                            </div>
 
-						<div class="form-group">
-							<label class="col-sm-3 control-label" for="Old">Rubro* </label>
-							<div class="col-sm-9">
-								<input type="text" class="form-control" id="lname" name="lname" value="<?php echo $lname;?>"  />
-							</div>
-						</div>	
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label" for="rubro_select">Rubro*</label>
+                                <div class="col-sm-9">
+                                    <select class="form-control" id="rubro_select" name="rubro_select">
+                                        <!-- Options will be loaded dynamically using JavaScript -->
+                                    </select>
+                                </div>
+                            </div>
 
-						 <div class="form-group">
-							<label class="col-sm-3 control-label" for="Old">Ítem * </label>
-							<div class="col-sm-9">
-								<input type="text" class="form-control" id="lname" name="lname" value="<?php echo $lname;?>"  />
-							</div>
-						</div>
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label" for="item_select">Ítem*</label>
+                                <div class="col-sm-9">
+                                    <select class="form-control" id="item_select" name="item_select">
+                                        <!-- Options will be loaded dynamically using JavaScript -->
+                                    </select>
+                                </div>
+                            </div>
 
-						<div class="form-group">
-							<label class="col-sm-3 control-label" for="Old">Subítem * </label>
-							<div class="col-sm-9">
-								<input type="text" class="form-control" id="lname" name="lname" value="<?php echo $lname;?>"  />
-							</div>
-						</div>	
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label" for="subitem_select">Subítem*</label>
+                                <div class="col-sm-9">
+                                    <select class="form-control" id="subitem_select" name="subitem_select">
+                                        <!-- Options will be loaded dynamically using JavaScript -->
+                                    </select>
+                                </div>
+                            </div>
 
-            <div class="form-group">
-							<label class="col-sm-3 control-label" for="Old">Detalle * </label>
-							<div class="col-sm-9">
-								<input type="text" class="form-control" id="lname" name="lname" value="<?php echo $lname;?>"  />
-							</div>
-						</div>	
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label" for="detail">Detalle*</label>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control" id="detail" name="detail" />
+                                </div>
+                            </div>
 
-            <div class="form-group">
-							<label class="col-sm-3 control-label" for="Old">Monto * </label>
-							<div class="col-sm-9">
-								<input type="text" class="form-control" id="lname" name="lname" value="<?php echo $lname;?>"  />
-							</div>
-						</div>	
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label" for="amount">Monto*</label>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control" id="amount" name="amount" />
+                                </div>
+                            </div>
 
 						 </fieldset>
 						
@@ -194,6 +203,90 @@ include("php/header.php");
     include("layout/footer-links.php");
 
     ?>
+
+    <script>
+
+$(document).ready(function () {
+    // Cargar opciones del campo Curso
+    $.ajax({
+        url: 'fees.php?action=get_courses',
+        method: 'GET',
+        dataType: 'json',
+        success: function (data) {
+            var courseSelect = $('#course_id');
+            $.each(data, function (index, course) {
+                courseSelect.append($('<option>', {
+                    value: course.course_id,
+                    text: course.course_name
+                }));
+            });
+        }
+    });
+
+    // Cargar opciones del campo Rubro
+    $.ajax({
+        url: 'fees.php?action=get_rubros',
+        method: 'GET',
+        dataType: 'json',
+        success: function (data) {
+            var rubroSelect = $('#rubro_select');
+            $.each(data, function (index, rubro) {
+                rubroSelect.append($('<option>', {
+                    value: rubro.rubro_id,
+                    text: rubro.rubro_name
+                }));
+            });
+        }
+    });
+
+})
+
+ // Cargar opciones del campo Ítem
+ $('#rubro_select').change(function () {
+        var rubro_id = $(this).val();
+        
+        $.ajax({
+            url: 'fees.php?action=get_items',
+            method: 'GET',
+            dataType: 'json',
+            data: { rubro_id: rubro_id },
+            success: function (data) {
+                var itemSelect = $('#item_select');
+                itemSelect.empty();
+                $.each(data, function (index, item) {
+                    itemSelect.append($('<option>', {
+                        value: item.item_id,
+                        text: item.item_name
+                    }));
+                });
+            }
+        });
+    });
+
+    // Cargar opciones del campo Subítem
+    $('#item_select').change(function () {
+        var item_id = $(this).val();
+        
+        $.ajax({
+            url: 'fees.php?action=get_subitems',
+            method: 'GET',
+            dataType: 'json',
+            data: { item_id: item_id },
+            success: function (data) {
+                var subitemSelect = $('#subitem_select');
+                subitemSelect.empty();
+                $.each(data, function (index, subitem) {
+                    subitemSelect.append($('<option>', {
+                        value: subitem.subitem_id,
+                        text: subitem.subitem_name
+                    }));
+                });
+            }
+        });
+    });
+
+
+    </script>
 
 </body>
 </html>
