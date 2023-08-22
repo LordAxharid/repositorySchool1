@@ -6,8 +6,8 @@ $action = "add";
 
 $id="";
 $emailid='';
-$fname='';
-$lname='';
+$first_name='';
+$last_name ='';
 $joindate = '';
 $remark='';
 $contact='';
@@ -20,30 +20,23 @@ $branch='';
 if(isset($_POST['save']))
 {
 
-$fname = mysqli_real_escape_string($conn,$_POST['fname']);
-$lname = mysqli_real_escape_string($conn,$_POST['lname']);
-$joindate = mysqli_real_escape_string($conn,$_POST['joindate']);
-
-$contact = mysqli_real_escape_string($conn,$_POST['contact']);
-$about = mysqli_real_escape_string($conn,$_POST['about']);
-$emailid = mysqli_real_escape_string($conn,$_POST['emailid']);
-$branch = mysqli_real_escape_string($conn,$_POST['branch']);
-
 
  if($_POST['action']=="add")
  {
- $remark = mysqli_real_escape_string($conn,$_POST['remark']);
- $fees = mysqli_real_escape_string($conn,$_POST['fees']);
- $advancefees = mysqli_real_escape_string($conn,$_POST['advancefees']);
- $balance = $fees-$advancefees;
- 
-  $q1 = $conn->query("INSERT INTO student (fname,lname,joindate,contact,about,emailid,branch,balance,fees) VALUES ('$fname','$lname','$joindate','$contact','$about','$emailid','$branch','$balance','$fees')") ;
-  
-  $sid = $conn->insert_id;
-  
- $conn->query("INSERT INTO  fees_transaction (stdid,paid,submitdate,transcation_remark) VALUES ('$sid','$advancefees','$joindate','$remark')") ;
+    // Obtener valores del formulario
+    $fecha = $_POST["fecha"];
+    $nombre_apellido = $_POST["nombre_apellido"];
+    $numero_celular = $_POST["numero_celular"];
+    $curso_interes = $_POST["curso_interes"];
+    $observaciones = $_POST["observaciones"];
     
-   echo '<script type="text/javascript">window.location="student.php?act=1";</script>';
+    // Insertar datos en la base de datos
+	$q1 = $conn->query("INSERT INTO reservations (date,full_name,phone_number,course_of_interest,observations) VALUES ('$fecha','$nombre_apellido','$numero_celular','$curso_interes','$observaciones')") ;
+
+    
+	echo '<script type="text/javascript">window.location="reservations.php?act=1";</script>';
+    
+    $stmt->close();
  
  }else
   if($_POST['action']=="update")
@@ -88,7 +81,7 @@ $_GET['action']="";
 
 if(isset($_REQUEST['act']) && @$_REQUEST['act']=="1")
 {
-$errormsg = "<div class='alert alert-success'> <a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><strong>Excelente!</strong> Estudiante Agregado Exitósamente</div>";
+$errormsg = "<div class='alert alert-success'> <a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><strong>Excelente!</strong> Reserva Agregada Exitósamente</div>";
 }else if(isset($_REQUEST['act']) && @$_REQUEST['act']=="2")
 {
 $errormsg = "<div class='alert alert-success'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a> <strong>Excelente!</strong> Estudiante Editado Exitósamente</div>";
@@ -123,7 +116,7 @@ include("php/header.php");
                         <h1 class="page-head-line">Reservas  
 						<?php
 						echo (isset($_GET['action']) && @$_GET['action']=="add" || @$_GET['action']=="edit")?
-						' <a href="reservations.php" class="btn btn-primary btn-sm pull-right">Volver <i class="glyphicon glyphicon-arrow-right"></i></a>':'<a href="student.php?action=add" class="btn btn-primary btn-sm pull-right"><i class="glyphicon glyphicon-plus"></i> Agregar Reservas </a>';
+						' <a href="reservations.php" class="btn btn-primary btn-sm pull-right">Volver <i class="glyphicon glyphicon-arrow-right"></i></a>':'<a href="reservations.php?action=add" class="btn btn-primary btn-sm pull-right"><i class="glyphicon glyphicon-plus"></i> Agregar Reservas </a>';
 						?>
 						</h1>
                      
@@ -148,51 +141,40 @@ echo $errormsg;
                         <div class="panel-heading">
                            <?php echo ($action=="add")? "Agregar Estudiante": "Editar Estudiante"; ?>
                         </div>
-						<form action="student.php" method="post" id="signupForm1" class="form-horizontal">
+						<form action="reservations.php" method="post" id="signupForm1" class="form-horizontal">
                         <div class="panel-body">
 						<fieldset class="scheduler-border" >
 						 <legend  class="scheduler-border">Información Personal:</legend>
-						<div class="form-group">
-								<label class="col-sm-3 control-label" for="Old">Fecha* </label>
-								<div class="col-sm-9">
-									<input type="text" class="form-control" id="fname" name="fname" value="<?php echo $fname;?>"  />
-								</div>
-							</div>
-	
-						<div class="form-group">
-							<label class="col-sm-3 control-label" for="Old">Nombres* </label>
+						 <div class="form-group">
+							<label class="col-sm-3 control-label" for="fecha">Fecha*</label>
 							<div class="col-sm-9">
-								<input type="text" class="form-control" id="lname" name="lname" value="<?php echo $lname;?>"  />
+								<input type="date" class="form-control" id="fecha" name="fecha" required>
 							</div>
 						</div>
-
 						<div class="form-group">
-							<label class="col-sm-3 control-label" for="Old">Apellidos* </label>
+							<label class="col-sm-3 control-label" for="nombre_apellido">Nombres y apellidos del/a solicitante*</label>
 							<div class="col-sm-9">
-								<input type="text" class="form-control" id="lname" name="lname" value="<?php echo $lname;?>"  />
+								<input type="text" class="form-control" id="nombre_apellido" name="nombre_apellido" required>
 							</div>
 						</div>
-
 						<div class="form-group">
-							<label class="col-sm-3 control-label" for="Old">N° de Celular* </label>
+							<label class="col-sm-3 control-label" for="numero_celular">Número de celular*</label>
 							<div class="col-sm-9">
-								<input type="text" class="form-control" id="lname" name="lname" value="<?php echo $lname;?>"  />
+								<input type="tel" class="form-control" id="numero_celular" name="numero_celular" required>
 							</div>
 						</div>
-
 						<div class="form-group">
-							<label class="col-sm-3 control-label" for="Old">Curso de interes* </label>
+							<label class="col-sm-3 control-label" for="curso_interes">Curso que le interesa*</label>
 							<div class="col-sm-9">
-								<input type="text" class="form-control" id="lname" name="lname" value="<?php echo $lname;?>"  />
+								<input type="text" class="form-control" id="curso_interes" name="curso_interes" required>
 							</div>
-						</div>	
-
+						</div>
 						<div class="form-group">
-							<label class="col-sm-3 control-label" for="Old">Observaciones* </label>
+							<label class="col-sm-3 control-label" for="observaciones">Observaciones</label>
 							<div class="col-sm-9">
-								<input type="text" class="form-control" id="lname" name="lname" value="<?php echo $lname;?>"  />
+								<textarea class="form-control" id="observaciones" name="observaciones" rows="3"></textarea>
 							</div>
-						</div>	
+						</div>
 
 						 </fieldset>
 						
@@ -413,20 +395,20 @@ yearRange: "1970:<?php echo date('Y');?>"
                                     </thead>
                                     <tbody>
 									<?php
-									$sql = "select * from students where delete_status='0'";
+									$sql = "select * from reservations where delete_status='0'";
 									$q = $conn->query($sql);
 									$i=1;
 									while($r = $q->fetch_assoc())
 									{
 									echo '<tr>
                                             <td>'.$i.'</td>
-                                            <td>'.$r['first_name'].'</td>
-											<td>'.$r['last_name'].'</td>
-											<td>'.$r['identity_card_number'].'</td>
+                                            <td>'.$r['date'].'</td>
+											<td>'.$r['full_name'].'</td>
 											<td>'.$r['phone_number'].'</td>
-											<td>'.$r['email'].'</td>
-											<td><a href="reservations.php?action=edit&id='.$r['student_id'].'" class="btn btn-success btn-xs"><span class="glyphicon glyphicon-edit"></span></a></td>
-											<td><a onclick="return confirm(\'Deseas realmente eliminar este registro, este proceso es irreversible\');" href="student.php?action=delete&id='.$r['student_id'].'" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove"></span></a></td>	
+											<td>'.$r['course_of_interest'].'</td>
+											<td>'.$r['observations'].'</td>
+											<td><a href="reservations.php?action=edit&id='.$r['reservation_id'].'" class="btn btn-success btn-xs"><span class="glyphicon glyphicon-edit"></span></a></td>
+											<td><a onclick="return confirm(\'Deseas realmente eliminar este registro, este proceso es irreversible\');" href="student.php?action=delete&id='.$r['reservation_id'].'" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove"></span></a></td>	
 										</tr>';
 										$i++;
 									}

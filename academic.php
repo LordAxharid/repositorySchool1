@@ -474,6 +474,87 @@ echo $errormsg;
             
 			
                 </div>
+
+			<script>
+
+$(document).ready(function () {
+    // Cargar opciones del campo Modalidad
+    $.ajax({
+        url: 'obtener_modalidades.php',
+        method: 'GET',
+        dataType: 'json',
+        success: function (data) {
+            var modalidadSelect = $('#modalidad_select');
+            $.each(data, function (index, option) {
+                modalidadSelect.append($('<option>', {
+                    value: option.value,
+                    text: option.text
+                }));
+            });
+        }
+    });
+
+    // Cargar opciones del campo Tipo
+    $.ajax({
+        url: 'obtener_tipos.php',
+        method: 'GET',
+        dataType: 'json',
+        success: function (data) {
+            var tipoSelect = $('#tipo_select');
+            $.each(data, function (index, option) {
+                tipoSelect.append($('<option>', {
+                    value: option.value,
+                    text: option.text
+                }));
+            });
+        }
+    });
+
+    // Cargar opciones del campo Área
+    $.ajax({
+        url: 'obtener_areas.php',
+        method: 'GET',
+        dataType: 'json',
+        success: function (data) {
+            var areaSelect = $('#area_select');
+            $.each(data, function (index, option) {
+                areaSelect.append($('<option>', {
+                    value: option.value,
+                    text: option.text
+                }));
+            });
+        }
+    });
+
+    // Cargar opciones del campo Nombre del Curso
+    $('#area_select').change(function () {
+        var selectedArea = $(this).val();
+        $.ajax({
+            url: 'obtener_cursos_por_area.php',
+            method: 'GET',
+            data: { area: selectedArea },
+            dataType: 'json',
+            success: function (data) {
+                var cursoSelect = $('#curso_select');
+                cursoSelect.empty();
+                cursoSelect.append($('<option>', {
+                    value: '',
+                    text: 'Selecciona un curso'
+                }));
+                $.each(data, function (index, option) {
+                    cursoSelect.append($('<option>', {
+                        value: option.value,
+                        text: option.text
+                    }));
+                });
+            }
+        });
+    });
+});
+
+			</script>
+
+
                	   
 		<script type="text/javascript">
 		

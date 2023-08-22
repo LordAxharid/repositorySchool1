@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1:3306
--- Tiempo de generación: 19-08-2023 a las 17:34:19
+-- Tiempo de generación: 22-08-2023 a las 04:53:03
 -- Versión del servidor: 8.0.31
 -- Versión de PHP: 8.0.26
 
@@ -66,14 +66,15 @@ CREATE TABLE IF NOT EXISTS `courses` (
   `delete_status` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`course_id`),
   KEY `teacher_id` (`teacher_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Volcado de datos para la tabla `courses`
 --
 
 INSERT INTO `courses` (`course_id`, `modality`, `type`, `area`, `course_name`, `course_code`, `teacher_id`, `cost`, `duration`, `start_date`, `days`, `schedule`, `delete_status`) VALUES
-(4, 'Presencial', 'Short Courses', '4', '1', 'curso1-2023-08-16', 11, '300000.00', '4 semanas', '2023-08-16', '10 dias', '8 am a 12 pm', 0);
+(4, 'Presencial', 'Short Courses', '4', '1', 'curso1-2023-08-16', 11, '300000.00', '4 semanas', '2023-08-16', '10 dias', '8 am a 12 pm', 0),
+(5, 'Presencial', 'Short Courses', '4', '2', 'curso1-2023-08-16', 11, '300000.00', '4 semanas', '2023-08-16', '10 dias', '8 am a 12 pm', 0);
 
 -- --------------------------------------------------------
 
@@ -126,7 +127,14 @@ CREATE TABLE IF NOT EXISTS `financial_entries` (
   `amount` decimal(10,2) DEFAULT NULL,
   PRIMARY KEY (`entry_id`),
   KEY `course_id` (`course_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Volcado de datos para la tabla `financial_entries`
+--
+
+INSERT INTO `financial_entries` (`entry_id`, `date`, `course_id`, `category`, `item`, `subitem`, `detail`, `amount`) VALUES
+(1, '2023-08-21', 4, '1', '2', '3', 'holatest', '20000.00');
 
 -- --------------------------------------------------------
 
@@ -144,8 +152,17 @@ CREATE TABLE IF NOT EXISTS `inventory` (
   `automatic_egress` int DEFAULT NULL,
   `manual_egress` int DEFAULT NULL,
   `balance` int DEFAULT NULL,
+  `delete_status` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`product_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Volcado de datos para la tabla `inventory`
+--
+
+INSERT INTO `inventory` (`product_id`, `product_code`, `product_type`, `product_name`, `ingress`, `automatic_egress`, `manual_egress`, `balance`, `delete_status`) VALUES
+(1, 'COD-58d306c9', '2', '3', NULL, NULL, 21223, -21223, 0),
+(2, 'COD-3498f6fc', '1', '2', 1, NULL, 1344, -1343, 0);
 
 -- --------------------------------------------------------
 
@@ -198,6 +215,60 @@ INSERT INTO `name_courses` (`id`, `name`, `delete_status`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `productos`
+--
+
+DROP TABLE IF EXISTS `productos`;
+CREATE TABLE IF NOT EXISTS `productos` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `tipo_id` int NOT NULL,
+  `nombre` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `tipo_id` (`tipo_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `productos`
+--
+
+INSERT INTO `productos` (`id`, `tipo_id`, `nombre`) VALUES
+(1, 1, 'Arroz'),
+(2, 1, 'Leche'),
+(3, 2, 'Teléfono móvil'),
+(4, 3, 'Camiseta');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `registros_inventario`
+--
+
+DROP TABLE IF EXISTS `registros_inventario`;
+CREATE TABLE IF NOT EXISTS `registros_inventario` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `producto_id` int NOT NULL,
+  `fecha` date NOT NULL,
+  `ingreso` int NOT NULL,
+  `egreso_automatico` int NOT NULL,
+  `egreso_manual` int NOT NULL,
+  `saldo` int NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `producto_id` (`producto_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `registros_inventario`
+--
+
+INSERT INTO `registros_inventario` (`id`, `producto_id`, `fecha`, `ingreso`, `egreso_automatico`, `egreso_manual`, `saldo`) VALUES
+(1, 1, '2023-08-16', 100, 10, 5, 85),
+(2, 2, '2023-08-16', 50, 5, 0, 45),
+(3, 3, '2023-08-16', 20, 2, 1, 17),
+(4, 4, '2023-08-16', 30, 3, 2, 25);
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `reservations`
 --
 
@@ -209,8 +280,16 @@ CREATE TABLE IF NOT EXISTS `reservations` (
   `phone_number` varchar(20) DEFAULT NULL,
   `course_of_interest` varchar(255) DEFAULT NULL,
   `observations` text,
+  `delete_status` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`reservation_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Volcado de datos para la tabla `reservations`
+--
+
+INSERT INTO `reservations` (`reservation_id`, `date`, `full_name`, `phone_number`, `course_of_interest`, `observations`, `delete_status`) VALUES
+(1, '2023-08-21', 'test', '24142451', 'curso1', 'sad', 0);
 
 -- --------------------------------------------------------
 
@@ -340,6 +419,28 @@ INSERT INTO `teachers` (`teacher_id`, `first_name`, `last_name`, `identity_card_
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `tipos_productos`
+--
+
+DROP TABLE IF EXISTS `tipos_productos`;
+CREATE TABLE IF NOT EXISTS `tipos_productos` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `nombre` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `tipos_productos`
+--
+
+INSERT INTO `tipos_productos` (`id`, `nombre`) VALUES
+(1, 'Alimentos'),
+(2, 'Electrónicos'),
+(3, 'Ropa');
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `users`
 --
 
@@ -371,6 +472,18 @@ INSERT INTO `users` (`id`, `username`, `password`, `rol`, `delete_status`) VALUE
 --
 ALTER TABLE `items`
   ADD CONSTRAINT `items_ibfk_1` FOREIGN KEY (`rubro_id`) REFERENCES `rubros` (`id`) ON DELETE CASCADE;
+
+--
+-- Filtros para la tabla `productos`
+--
+ALTER TABLE `productos`
+  ADD CONSTRAINT `productos_ibfk_1` FOREIGN KEY (`tipo_id`) REFERENCES `tipos_productos` (`id`);
+
+--
+-- Filtros para la tabla `registros_inventario`
+--
+ALTER TABLE `registros_inventario`
+  ADD CONSTRAINT `registros_inventario_ibfk_1` FOREIGN KEY (`producto_id`) REFERENCES `productos` (`id`);
 
 --
 -- Filtros para la tabla `subitems`

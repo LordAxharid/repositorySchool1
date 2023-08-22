@@ -18,6 +18,163 @@ $date='';
 
 ?>
 
+<?php
+
+
+if(isset($_POST['save']))
+{
+
+        if($_POST['action']=="add")
+        {
+
+            
+        // Obtener los datos del formulario
+        $date = $_POST['date'];
+        $course_id = $_POST['course_select'];
+        $rubro_id = $_POST['rubro_select'];
+        $item_id = $_POST['item_select'];
+        $subitem_id = $_POST['subitem_select'];
+        $detail = $_POST['detail'];
+        $amount = $_POST['amount'];
+
+        // Conectar a la base de datos (misma conexión que antes)
+
+        // Insertar los datos en la tabla de ingresos
+        $sql = "INSERT INTO financial_entries (date, course_id, category, item, subitem, detail, amount)
+                VALUES ('$date', $course_id, $rubro_id, $item_id, $subitem_id, '$detail', $amount)";
+
+        if ($conn->query($sql) === TRUE) {
+            echo '<script type="text/javascript">window.location="fees.php?act=1";</script>';
+        } else {
+            echo "Error: " . $sql . "<br>" . $conn->error;
+        }
+
+        }
+}
+
+if (isset($_GET['action']) && $_GET['action'] == 'get_courses') {
+
+    // Realiza una consulta SQL para obtener los cursos filtrados
+    $query = "SELECT course_code, course_name, course_id FROM courses";
+    $result = $conn->query($query);
+
+    $courses = array();
+
+    if ($result !== false && $result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            $idCourse = $row['course_id'];
+            $codigo = $row['course_name'];
+            $codeCourse = $row['course_code'];
+            
+            // Obtener el nombre real del curso
+            $queryName = "SELECT name FROM name_courses WHERE id = '$codigo'";
+            $resultName = $conn->query($queryName);
+
+            if ($resultName !== false && $resultName->num_rows > 0) {
+                $realName = $resultName->fetch_assoc()['name'];
+            } else {
+                $realName = "Nombre no encontrado";
+            }
+
+            $courses[] = array(
+                'codigo' => $codigo,
+                'nombre' => $realName.'-'.$codeCourse,
+                'idCourse' => $idCourse,
+            );
+        }
+    }
+
+    header('Content-Type: application/json'); // Indicar que la respuesta es en formato JSON
+    echo json_encode($courses);
+    exit();
+
+}
+
+if (isset($_GET['action']) && $_GET['action'] == 'get_rubros') {
+
+    // Consulta para obtener los rubros
+        $sql = "SELECT * FROM rubros";
+        $result = $conn->query($sql);
+
+        $rubros = array();
+        if ($result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                $rubros[] = array(
+                    'rubro_id' => $row['id'],
+                    'rubro_name' => $row['name']
+                );
+            }
+        }
+
+        // Enviar la respuesta como JSON
+        header('Content-Type: application/json');
+        echo json_encode($rubros);
+        exit();
+
+}
+
+if (isset($_GET['action']) && $_GET['action'] == 'get_items') {
+
+    // Obtener el rubro seleccionado
+        $rubro_id = $_GET['rubro_id'];
+
+        // Conectar a la base de datos (misma conexión que antes)
+
+        // Consulta para obtener los ítems del rubro específico
+        $sql = "SELECT * FROM items WHERE rubro_id = $rubro_id";
+        $result = $conn->query($sql);
+
+        $items = array();
+        if ($result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                $items[] = array(
+                    'item_id' => $row['id'],
+                    'item_name' => $row['name']
+                );
+            }
+        }
+
+        // Cerrar la conexión a la base de datos
+
+        // Enviar la respuesta como JSON
+        header('Content-Type: application/json');
+        echo json_encode($items);
+        exit();
+}
+
+if (isset($_GET['action']) && $_GET['action'] == 'get_subitems') {
+
+        // Obtener el ítem seleccionado
+        $item_id = $_GET['item_id'];
+
+        // Conectar a la base de datos (misma conexión que antes)
+
+        // Consulta para obtener los subítems del ítem específico
+        $sql = "SELECT * FROM subitems WHERE item_id = $item_id";
+        $result = $conn->query($sql);
+
+        $subitems = array();
+        if ($result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                $subitems[] = array(
+                    'subitem_id' => $row['id'],
+                    'subitem_name' => $row['name']
+                );
+            }
+        }
+
+        // Cerrar la conexión a la base de datos
+
+        // Enviar la respuesta como JSON
+        header('Content-Type: application/json');
+        echo json_encode($subitems);
+
+        exit();
+
+}
+
+?>
+
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -25,11 +182,9 @@ $date='';
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Sistema de Pago Escolar</title>
 
-    
     <?php  
     include("layout/head-links.php");
     ?>
-
 
 </head>
 <?php
@@ -59,15 +214,16 @@ include("php/header.php");
 						<div class="form-group">
 								<label class="col-sm-3 control-label" for="Old">Fecha* </label>
 								<div class="col-sm-9">
-									<input type="text" class="form-control" id="date" name="date" value="<?php echo $date;?>"  />
+									<input type="date" class="form-control" id="date" name="date" value="<?php echo $date;?>"  />
 								</div>
 							</div>
 	
                             <div class="form-group">
-                                <label class="col-sm-3 control-label" for="course_id">Curso*</label>
+                                <label class="col-sm-3 control-label" for="course_select">Nombre del Curso*</label>
                                 <div class="col-sm-9">
-                                    <select class="form-control" id="course_id" name="course_id">
+                                    <select class="form-control" id="course_select" name="course_select">
                                         <!-- Options will be loaded dynamically using JavaScript -->
+                                        <option value="">Selecciona un curso</option>
                                     </select>
                                 </div>
                             </div>
@@ -77,6 +233,7 @@ include("php/header.php");
                                 <div class="col-sm-9">
                                     <select class="form-control" id="rubro_select" name="rubro_select">
                                         <!-- Options will be loaded dynamically using JavaScript -->
+                                        <option value="">Selecciona un rubro</option>
                                     </select>
                                 </div>
                             </div>
@@ -207,21 +364,23 @@ include("php/header.php");
     <script>
 
 $(document).ready(function () {
-    // Cargar opciones del campo Curso
-    $.ajax({
-        url: 'fees.php?action=get_courses',
-        method: 'GET',
-        dataType: 'json',
-        success: function (data) {
-            var courseSelect = $('#course_id');
-            $.each(data, function (index, course) {
-                courseSelect.append($('<option>', {
-                    value: course.course_id,
-                    text: course.course_name
-                }));
-            });
-        }
-    });
+ // Obtener la referencia al campo de selección de cursos
+ var courseSelect = $('#course_select');
+
+// Realizar una petición AJAX para obtener la lista de cursos
+$.ajax({
+    url: 'fees.php?action=get_courses',
+    method: 'GET',
+    dataType: 'json',
+    success: function (data) {
+        $.each(data, function (index, course) {
+            courseSelect.append($('<option>', {
+                value: course.idCourse,
+                text: course.nombre
+            }));
+        });
+    }
+});
 
     // Cargar opciones del campo Rubro
     $.ajax({
