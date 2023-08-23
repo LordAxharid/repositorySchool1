@@ -15,6 +15,7 @@ $fees='';
 $about = '';
 $branch='';
 $date='';
+$expense_date='now';
 
 ?>
 
@@ -194,12 +195,98 @@ include("php/header.php");
             <div id="page-inner">
                 <div class="row">
                     <div class="col-md-12">
-                        <h1 class="page-head-line">Ingreso</h1>
+                        <h1 class="page-head-line">Contable</h1>
 
                     </div>
                 </div>
                 <!-- /. ROW  -->
                 <div class="row">
+
+                <?php 
+        if(isset($_GET['action']) && @$_GET['action']=='expense') {
+        ?>
+
+<div class="row">
+            <div class="col-sm-10 col-sm-offset-1">
+               <div class="panel panel-primary">
+						<form action="fees.php" method="post" id="signupForm1" class="form-horizontal">
+                        <div class="panel-body">
+						<fieldset class="scheduler-border" >
+						 <legend  class="scheduler-border">Agregar gasto:</legend>
+						<div class="form-group">
+                <label class="col-sm-3 control-label" for="expense_date">Fecha* </label>
+                <div class="col-sm-9">
+                    <input type="date" class="form-control" id="expense_date" name="expense_date" value="<?php echo $expense_date; ?>" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label" for="expense_course_select">Nombre del Curso*</label>
+                <div class="col-sm-9">
+                    <select class="form-control" id="expense_course_select" name="expense_course_select">
+                        <!-- Opciones se cargarán dinámicamente usando JavaScript -->
+                        <option value="">Selecciona un curso</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label" for="expense_rubro_select">Rubro*</label>
+                <div class="col-sm-9">
+                    <select class="form-control" id="expense_rubro_select" name="expense_rubro_select">
+                        <!-- Opciones se cargarán dinámicamente usando JavaScript -->
+                        <option value="">Selecciona un rubro</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label" for="expense_item_select">Ítem*</label>
+                <div class="col-sm-9">
+                    <select class="form-control" id="expense_item_select" name="expense_item_select">
+                        <!-- Opciones se cargarán dinámicamente usando JavaScript -->
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label" for="expense_subitem_select">Subítem*</label>
+                <div class="col-sm-9">
+                    <select class="form-control" id="expense_subitem_select" name="expense_subitem_select">
+                        <!-- Opciones se cargarán dinámicamente usando JavaScript -->
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label" for="expense_detail">Detalle*</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" id="expense_detail" name="expense_detail" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label" for="expense_amount">Monto*</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" id="expense_amount" name="expense_amount" />
+                </div>
+            </div>
+
+            </div>
+							</form>
+							
+                        </div>
+                            </div>
+            
+			
+                </div>
+
+        <?php 
+        }    
+        ?>
+
+
+
                 <?php 
         if(isset($_GET['action']) && @$_GET['action']=='deposit') {
         ?>
@@ -312,7 +399,7 @@ include("php/header.php");
 
                     <div class="col-md-4">
                         <div class="main-box mb-yellow">
-                            <a href="reports.php?action=general-areas">
+                            <a href="reports.php?action=expense">
                                 <i class="fa fa-users fa-5x"></i>
                                 <h5>Agregar gastos</h5>
                             </a>
@@ -442,10 +529,95 @@ $.ajax({
                 });
             }
         });
+
+
+        // Obtener la referencia al campo de selección de cursos
+ var courseSelect = $('#expense_course_select');
+
+// Realizar una petición AJAX para obtener la lista de cursos
+$.ajax({
+    url: 'fees.php?action=get_courses',
+    method: 'GET',
+    dataType: 'json',
+    success: function (data) {
+        $.each(data, function (index, course) {
+            courseSelect.append($('<option>', {
+                value: course.idCourse,
+                text: course.nombre
+            }));
+        });
+    }
+});
+
+    // Cargar opciones del campo Rubro
+    $.ajax({
+        url: 'fees.php?action=get_rubros',
+        method: 'GET',
+        dataType: 'json',
+        success: function (data) {
+            var rubroSelect = $('#rubro_select');
+            $.each(data, function (index, rubro) {
+                rubroSelect.append($('<option>', {
+                    value: rubro.rubro_id,
+                    text: rubro.rubro_name
+                }));
+            });
+        }
+    });
+
+})
+
+ // Cargar opciones del campo Ítem
+ $('#rubro_select').change(function () {
+        var rubro_id = $(this).val();
+        
+        $.ajax({
+            url: 'fees.php?action=get_items',
+            method: 'GET',
+            dataType: 'json',
+            data: { rubro_id: rubro_id },
+            success: function (data) {
+                var itemSelect = $('#item_select');
+                itemSelect.empty();
+                $.each(data, function (index, item) {
+                    itemSelect.append($('<option>', {
+                        value: item.item_id,
+                        text: item.item_name
+                    }));
+                });
+            }
+        });
+    });
+
+    // Cargar opciones del campo Subítem
+    $('#item_select').change(function () {
+        var item_id = $(this).val();
+        
+        $.ajax({
+            url: 'fees.php?action=get_subitems',
+            method: 'GET',
+            dataType: 'json',
+            data: { item_id: item_id },
+            success: function (data) {
+                var subitemSelect = $('#subitem_select');
+                subitemSelect.empty();
+                $.each(data, function (index, subitem) {
+                    subitemSelect.append($('<option>', {
+                        value: subitem.subitem_id,
+                        text: subitem.subitem_name
+                    }));
+                });
+            }
+        });
+    });
+
+
     });
 
 
     </script>
+
+    
 
 </body>
 </html>
