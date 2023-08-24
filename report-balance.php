@@ -228,88 +228,6 @@ if (isset($_GET['action']) && $_GET['action'] == 'get_subitems') {
 
 }
 
-//All general querys 
-if (isset($_GET['action']) && $_GET['action'] == 'get_general_rubros') {
-
-    // Consulta para obtener los rubros
-        $sql = "SELECT * FROM general_categories";
-        $result = $conn->query($sql);
-
-        $rubros = array();
-        if ($result->num_rows > 0) {
-            while ($row = $result->fetch_assoc()) {
-                $rubros[] = array(
-                    'rubro_id' => $row['id'],
-                    'rubro_name' => $row['name']
-                );
-            }
-        }
-
-        // Enviar la respuesta como JSON
-        header('Content-Type: application/json');
-        echo json_encode($rubros);
-        exit();
-
-}
-
-if (isset($_GET['action']) && $_GET['action'] == 'get_general_items') {
-    // Obtener el rubro seleccionado
-    $rubro_id = $_GET['rubro_id'];
-
-    // Conectar a la base de datos (misma conexión que antes)
-
-    // Consulta para obtener los ítems del rubro específico
-    $sql = "SELECT * FROM general_items WHERE category_id = $rubro_id";
-    $result = $conn->query($sql);
-
-    $items = array();
-    if ($result->num_rows > 0) {
-        while ($row = $result->fetch_assoc()) {
-            $items[] = array(
-                'item_id' => $row['id'],
-                'item_name' => $row['name']
-            );
-        }
-    }
-
-    // Cerrar la conexión a la base de datos
-
-    // Enviar la respuesta como JSON
-    header('Content-Type: application/json');
-    echo json_encode($items);
-    exit();
-}
-
-if (isset($_GET['action']) && $_GET['action'] == 'get_general_subitems') {
-
-    // Obtener el ítem seleccionado
-    $item_id = $_GET['item_id'];
-
-    // Conectar a la base de datos (misma conexión que antes)
-
-    // Consulta para obtener los subítems del ítem específico
-    $sql = "SELECT * FROM general_subitems WHERE item_id = $item_id";
-    $result = $conn->query($sql);
-
-    $subitems = array();
-    if ($result->num_rows > 0) {
-        while ($row = $result->fetch_assoc()) {
-            $subitems[] = array(
-                'subitem_id' => $row['id'],
-                'subitem_name' => $row['name']
-            );
-        }
-    }
-
-    // Cerrar la conexión a la base de datos
-
-    // Enviar la respuesta como JSON
-    header('Content-Type: application/json');
-    echo json_encode($subitems);
-
-    exit();
-
-}
 
 
 
@@ -353,223 +271,30 @@ include("php/header.php");
                 <!-- /. ROW  -->
                 <div class="row">
 
-
-            <?php if (isset($_GET['action']) && @$_GET['action']=='expense-deposit-institution') {
-             ?>
-        <div class="row">
-            <div class="col-sm-10 col-sm-offset-1">
-               <div class="panel panel-primary">
-						<form action="fees.php" method="post" id="signupForm1" class="form-horizontal">
-                        <div class="panel-body">
-						<fieldset class="scheduler-border" >
-						 <legend  class="scheduler-border">Agregar ingreso o gasto institucional:</legend>
-						<div class="form-group">
-                <label class="col-sm-3 control-label" for="general_date">Fecha* </label>
-                <div class="col-sm-9">
-                    <input type="date" class="form-control" id="general_date" name="general_date" value="<?php echo $expense_date; ?>" />
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label class="col-sm-3 control-label" for="general_rubro_select">Rubro*</label>
-                <div class="col-sm-9">
-                    <select class="form-control" id="general_rubro_select" name="general_rubro_select">
-                        <!-- Opciones se cargarán dinámicamente usando JavaScript -->
-                        <option value="">Selecciona un rubro</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label class="col-sm-3 control-label" for="general_item_select">Ítem*</label>
-                <div class="col-sm-9">
-                    <select class="form-control" id="general_item_select" name="general_item_select">
-                        <!-- Opciones se cargarán dinámicamente usando JavaScript -->
-                        <option value="">Selecciona un item</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label class="col-sm-3 control-label" for="general_subitem_select">Subítem*</label>
-                <div class="col-sm-9">
-                    <select class="form-control" id="general_subitem_select" name="general_subitem_select">
-                        <!-- Opciones se cargarán dinámicamente usando JavaScript -->
-                        <option value="">Selecciona un subitem</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label class="col-sm-3 control-label" for="general_detail">Detalle*</label>
-                <div class="col-sm-9">
-                    <input type="text" class="form-control" id="general_detail" name="general_detail" />
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label class="col-sm-3 control-label" for="general_amount">Monto*</label>
-                <div class="col-sm-9">
-                    <input type="text" class="form-control" id="general_amount" name="general_amount" />
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label class="col-sm-3 control-label" for="general_type_select">Tipo*</label>
-                <div class="col-sm-9">
-                    <select class="form-control" id="general_type_select" name="general_type_select">
-                        <option>Selecciona una opcion</option>
-                        <option value="Ingreso">Ingreso</option>
-                        <option value="Egreso">Egreso</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="form-group">
-			    <div class="col-sm-8 col-sm-offset-2">
-				    <input type="hidden" name="id" value="<?php echo $id;?>">
-					<input type="hidden" name="action" value="add-institution-expense-deposit">
-					    <button type="submit" name="save" class="btn btn-primary">Guardar </button>
-				</div>
-			</div>
-        </div>
-	        </form>				
-        </div>
-        </div>
-     </div>
-
-            <?php 
-            }
-            ?>
-
-
                 <?php 
-                if(isset($_GET['action']) && @$_GET['action']=='expense') {
+                    if (!isset($_GET['action'])) {
+                        # code...
                 ?>
-
-            <div class="row">
+				 <div class="row">
             <div class="col-sm-10 col-sm-offset-1">
                <div class="panel panel-primary">
 						<form action="fees.php" method="post" id="signupForm1" class="form-horizontal">
                         <div class="panel-body">
 						<fieldset class="scheduler-border" >
-						 <legend  class="scheduler-border">Agregar gasto:</legend>
-						<div class="form-group">
-                <label class="col-sm-3 control-label" for="expense_date">Fecha* </label>
-                <div class="col-sm-9">
-                    <input type="date" class="form-control" id="expense_date" name="expense_date" value="<?php echo $expense_date; ?>" />
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label class="col-sm-3 control-label" for="expense_course_select">Nombre del Curso*</label>
-                <div class="col-sm-9">
-                    <select class="form-control" id="expense_course_select" name="expense_course_select">
-                        <!-- Opciones se cargarán dinámicamente usando JavaScript -->
-                        <option value="">Selecciona un curso</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label class="col-sm-3 control-label" for="expense_rubro_select">Rubro*</label>
-                <div class="col-sm-9">
-                    <select class="form-control" id="expense_rubro_select" name="expense_rubro_select">
-                        <!-- Opciones se cargarán dinámicamente usando JavaScript -->
-                        <option value="">Selecciona un rubro</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label class="col-sm-3 control-label" for="expense_item_select">Ítem*</label>
-                <div class="col-sm-9">
-                    <select class="form-control" id="expense_item_select" name="expense_item_select">
-                        <!-- Opciones se cargarán dinámicamente usando JavaScript -->
-                    </select>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label class="col-sm-3 control-label" for="expense_subitem_select">Subítem*</label>
-                <div class="col-sm-9">
-                    <select class="form-control" id="expense_subitem_select" name="expense_subitem_select">
-                        <!-- Opciones se cargarán dinámicamente usando JavaScript -->
-                    </select>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label class="col-sm-3 control-label" for="expense_detail">Detalle*</label>
-                <div class="col-sm-9">
-                    <input type="text" class="form-control" id="expense_detail" name="expense_detail" />
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label class="col-sm-3 control-label" for="expense_amount">Monto*</label>
-                <div class="col-sm-9">
-                    <input type="text" class="form-control" id="expense_amount" name="expense_amount" />
-                </div>
-            </div>
-
-
-
-            						<div class="form-group">
-								<div class="col-sm-8 col-sm-offset-2">
-								<input type="hidden" name="id" value="<?php echo $id;?>">
-								<input type="hidden" name="action" value="add-expense">
-									<button type="submit" name="save" class="btn btn-primary">Guardar </button>
-								</div>
-							</div>
-                         
-                           
-                           
-                         
-                           
-                         </div>
-							</form>
-							
-                        </div>
-                            </div>
-            
-			
-                </div>
-
-        <?php 
-        }    
-        ?>
-
-
-
-                <?php 
-        if(isset($_GET['action']) && @$_GET['action']=='deposit') {
-        ?>
-        
-        <div class="row">
-            <div class="col-sm-10 col-sm-offset-1">
-               <div class="panel panel-primary">
-						<form action="fees.php" method="post" id="signupForm1" class="form-horizontal">
-                        <div class="panel-body">
-						<fieldset class="scheduler-border" >
-						 <legend  class="scheduler-border">Agregar ingreso:</legend>
-						<div class="form-group">
-								<label class="col-sm-3 control-label" for="Old">Fecha* </label>
-								<div class="col-sm-9">
-									<input type="date" class="form-control" id="date" name="date" value="<?php echo $date;?>"  />
-								</div>
-							</div>
-	
+						 <legend  class="scheduler-border">Filtrar:</legend>
                             <div class="form-group">
-                                <label class="col-sm-3 control-label" for="course_select">Nombre del Curso*</label>
+                                <label class="col-sm-3 control-label" for="modalidad">Modalidad*</label>
                                 <div class="col-sm-9">
-                                    <select class="form-control" id="course_select" name="course_select">
+                                    <select class="form-control" id="modalidad" name="modalidad">
                                         <!-- Options will be loaded dynamically using JavaScript -->
-                                        <option value="">Selecciona un curso</option>
+                                        <option value="">Selecciona una opcion</option>
+                                        <option value="Virtual">Virtual</option>
+                                        <option value="Presencial">Presencial</option>
                                     </select>
                                 </div>
                             </div>
 
+                            
                             <div class="form-group">
                                 <label class="col-sm-3 control-label" for="rubro_select">Rubro*</label>
                                 <div class="col-sm-9">
@@ -604,20 +329,28 @@ include("php/header.php");
                                     <input type="text" class="form-control" id="detail" name="detail" />
                                 </div>
                             </div>
-
+                      
                             <div class="form-group">
-                                <label class="col-sm-3 control-label" for="amount">Monto*</label>
-                                <div class="col-sm-9">
-                                    <input type="text" class="form-control" id="amount" name="amount" />
-                                </div>
-                            </div>
+                            <label class="col-sm-3 control-label" for="Old">Fecha Inicio* </label>
+								<div class="col-sm-9">
+									<input type="date" class="form-control" id="start_date" name="start_date"  />
+								</div>
+							</div>
+                       
+                            <div class="form-group">
+                            <label class="col-sm-3 control-label" for="Old">Fecha Fin* </label>
+								<div class="col-sm-9">
+									<input type="date" class="form-control" id="end_date" name="end_date" />
+								</div>
+							</div>
+
 
 						 </fieldset>
 						
 						<div class="form-group">
 								<div class="col-sm-8 col-sm-offset-2">
 								<input type="hidden" name="id" value="<?php echo $id;?>">
-								<input type="hidden" name="action" value="<?php echo $action;?>">
+								<input type="hidden" name="action" value="filter-report">
 									<button type="submit" name="save" class="btn btn-primary">Guardar </button>
 								</div>
 							</div>
@@ -633,60 +366,6 @@ include("php/header.php");
                             </div>
             
 			
-                </div>
-
-        <?php 
-        }
-        ?>
-
-                <?php 
-                    if (!isset($_GET['action'])) {
-                        # code...
-                ?>
-				  <div class="col-md-4">
-                        <div class="main-box mb-pink">
-                            <a href="fees.php?action=deposit">
-                                <i class="fa fa-users fa-5x"></i>
-                                <h5>Agregar ingresos</h5>
-                            </a>
-                        </div>
-                    </div>
-
-                    <div class="col-md-4">
-                        <div class="main-box mb-yellow">
-                            <a href="fees.php?action=expense">
-                                <i class="fa fa-users fa-5x"></i>
-                                <h5>Agregar gastos</h5>
-                            </a>
-                        </div>
-                    </div>
-
-                    <div class="col-md-4">
-                        <div class="main-box mb-pink">
-                            <a href="fees.php?action=expense-deposit-institution">
-                                <i class="fa fa-users fa-5x"></i>
-                                <h5>Agregar gasto o ingreso institucional</h5>
-                            </a>
-                        </div>
-                    </div>
-
-                    <div class="col-md-4">
-                        <div class="main-box mb-blue">
-                            <a href="fees.php?action=balance">
-                                <i class="fa fa-book fa-5x"></i>
-                                <h5>Ver balance general</h5>
-                            </a>
-                        </div>
-                    </div>
-
-                    <div class="col-md-4">
-                        <div class="main-box mb-blue">
-                            <a href="report-balance.php">
-                                <i class="fa fa-calendar fa-5x"></i>
-                                <h5>Informes</h5>
-                            </a>
-                        </div>
-                    </div>
                 </div>
                 <?php 
                     }
