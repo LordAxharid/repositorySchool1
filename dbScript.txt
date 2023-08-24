@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1:3306
--- Tiempo de generación: 22-08-2023 a las 04:53:03
+-- Tiempo de generación: 24-08-2023 a las 04:06:34
 -- Versión del servidor: 8.0.31
 -- Versión de PHP: 8.0.26
 
@@ -125,16 +125,20 @@ CREATE TABLE IF NOT EXISTS `financial_entries` (
   `subitem` varchar(255) DEFAULT NULL,
   `detail` varchar(255) DEFAULT NULL,
   `amount` decimal(10,2) DEFAULT NULL,
+  `type` varchar(255) NOT NULL,
   PRIMARY KEY (`entry_id`),
   KEY `course_id` (`course_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Volcado de datos para la tabla `financial_entries`
 --
 
-INSERT INTO `financial_entries` (`entry_id`, `date`, `course_id`, `category`, `item`, `subitem`, `detail`, `amount`) VALUES
-(1, '2023-08-21', 4, '1', '2', '3', 'holatest', '20000.00');
+INSERT INTO `financial_entries` (`entry_id`, `date`, `course_id`, `category`, `item`, `subitem`, `detail`, `amount`, `type`) VALUES
+(4, '2023-08-23', 4, '1', '2', '3', 'dsf', '23441.00', 'Ingreso'),
+(2, '2023-08-23', 4, '1', '2', '3', 'dsf', '23441.00', 'Gasto'),
+(3, '2023-08-23', 5, '1', '2', '3', 'holatest', '20000.00', 'Ingreso'),
+(5, '2023-08-23', 5, '1', '2', '3', 'holatest', '20000.00', 'Gasto');
 
 -- --------------------------------------------------------
 

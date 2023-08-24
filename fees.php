@@ -37,12 +37,41 @@ if(isset($_POST['save']))
         $subitem_id = $_POST['subitem_select'];
         $detail = $_POST['detail'];
         $amount = $_POST['amount'];
+        $type = 'Ingreso';
 
         // Conectar a la base de datos (misma conexión que antes)
 
         // Insertar los datos en la tabla de ingresos
-        $sql = "INSERT INTO financial_entries (date, course_id, category, item, subitem, detail, amount)
-                VALUES ('$date', $course_id, $rubro_id, $item_id, $subitem_id, '$detail', $amount)";
+        $sql = "INSERT INTO financial_entries (date, course_id, category, item, subitem, detail, amount, type)
+                VALUES ('$date', $course_id, $rubro_id, $item_id, $subitem_id, '$detail', $amount, '$type')";
+
+        if ($conn->query($sql) === TRUE) {
+            echo '<script type="text/javascript">window.location="fees.php?act=1";</script>';
+        } else {
+            echo "Error: " . $sql . "<br>" . $conn->error;
+        }
+
+        }
+
+        if($_POST['action']=="add-expense")
+        {
+
+            
+        // Obtener los datos del formulario
+        $date = $_POST['expense_date'];
+        $course_id = $_POST['expense_course_select'];
+        $rubro_id = $_POST['expense_rubro_select'];
+        $item_id = $_POST['expense_item_select'];
+        $subitem_id = $_POST['expense_subitem_select'];
+        $detail = $_POST['expense_detail'];
+        $amount = $_POST['expense_amount'];
+        $type = 'Gasto';
+
+        // Conectar a la base de datos (misma conexión que antes)
+
+        // Insertar los datos en la tabla de ingresos
+        $sql = "INSERT INTO financial_entries (date, course_id, category, item, subitem, detail, amount, type)
+                VALUES ('$date', $course_id, $rubro_id, $item_id, $subitem_id, '$detail', $amount, '$type')";
 
         if ($conn->query($sql) === TRUE) {
             echo '<script type="text/javascript">window.location="fees.php?act=1";</script>';
@@ -174,6 +203,19 @@ if (isset($_GET['action']) && $_GET['action'] == 'get_subitems') {
 
 }
 
+
+if(isset($_REQUEST['act']) && @$_REQUEST['act']=="1")
+{
+$errormsg = "<div class='alert alert-success'> <a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><strong>Excelente!</strong> Ingreso o Egreso Agregado Exitósamente</div>";
+}else if(isset($_REQUEST['act']) && @$_REQUEST['act']=="2")
+{
+$errormsg = "<div class='alert alert-success'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a> <strong>Excelente!</strong> Ingreso o Egreso Editado Exitósamente</div>";
+}
+else if(isset($_REQUEST['act']) && @$_REQUEST['act']=="3")
+{
+$errormsg = "<div class='alert alert-success'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><strong>Excelente!</strong> Ingreso o Egreso Eliminado Exitósamente</div>";
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -272,7 +314,21 @@ include("php/header.php");
                 </div>
             </div>
 
-            </div>
+
+
+            						<div class="form-group">
+								<div class="col-sm-8 col-sm-offset-2">
+								<input type="hidden" name="id" value="<?php echo $id;?>">
+								<input type="hidden" name="action" value="add-expense">
+									<button type="submit" name="save" class="btn btn-primary">Guardar </button>
+								</div>
+							</div>
+                         
+                           
+                           
+                         
+                           
+                         </div>
 							</form>
 							
                         </div>
@@ -399,7 +455,7 @@ include("php/header.php");
 
                     <div class="col-md-4">
                         <div class="main-box mb-yellow">
-                            <a href="reports.php?action=expense">
+                            <a href="fees.php?action=expense">
                                 <i class="fa fa-users fa-5x"></i>
                                 <h5>Agregar gastos</h5>
                             </a>
@@ -408,7 +464,7 @@ include("php/header.php");
 
                     <div class="col-md-4">
                         <div class="main-box mb-blue">
-                            <a href="reports.php?action=general-dates">
+                            <a href="fees.php?action=balance">
                                 <i class="fa fa-book fa-5x"></i>
                                 <h5>Ver balance general</h5>
                             </a>
@@ -427,6 +483,108 @@ include("php/header.php");
                 <?php 
                     }
                 ?>
+
+
+                    <?php 
+                        if (isset($_GET['action']) && $_GET['action']=='balance') {
+
+                               // Calcular el total de ingresos
+                                $sql_ingresos = "SELECT SUM(amount) AS total_ingresos FROM financial_entries WHERE type = 'Ingreso'";
+                                $result_ingresos = $conn->query($sql_ingresos);
+                                $row_ingresos = $result_ingresos->fetch_assoc();
+                                $total_ingresos = $row_ingresos["total_ingresos"];
+
+                                // Calcular el total de gastos
+                                $sql_gastos = "SELECT SUM(amount) AS total_gastos FROM financial_entries WHERE type = 'Gasto'";
+                                $result_gastos = $conn->query($sql_gastos);
+                                $row_gastos = $result_gastos->fetch_assoc();
+                                $total_gastos = $row_gastos["total_gastos"];
+
+                                // Calcular el balance general
+                                $balance_general = $total_ingresos - $total_gastos;
+                                echo '<div class="col-md-4"> <div class="main-box mb-blue">';
+                                echo "<h5>Total de Ingresos: " . $total_ingresos . "</h5>";
+                                echo "<h5>Total de Gastos: " . $total_gastos . "</h5>";
+                                echo "<h5>Balance General: " . $balance_general . "</h5>";
+                                echo '</div></div>';
+
+                    ?>
+
+<div class="panel panel-default">
+
+                        <div class="panel-body">
+                            <div class="table-sorting table-responsive">
+                                <table class="table table-striped table-bordered table-hover" id="tSortable22">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+											<th>Curso</th>
+											<th>Informe</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+									<?php
+									$sql = "select * from courses";
+									$q = $conn->query($sql);
+									$i=1;
+									while($r = $q->fetch_assoc())
+									{
+                                    $sqlCourse = "select * from financial_entries WHERE course_id = ".$r['course_id']."";
+                                    $qC = $conn->query($sqlCourse);
+                                    $rC = $qC->fetch_assoc();
+                           
+									echo '<tr>
+                                            <td>'.$i.'</td>
+                                            <td>'.$r['course_code'].'</td>
+											<td><a href="fees.php?action=see-balance-course&id='.$r['course_id'].'" class="btn btn-success btn-xs"><span class="glyphicon glyphicon-edit"></span></a></td>
+										</tr>';
+										$i++;
+									}
+									?>
+									
+                                        
+                                        
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                        <?php 
+                        } 
+                        ?>
+
+                        <?php 
+                        if (isset($_GET['action']) && $_GET['action']=='see-balance-course') {
+
+                                // Obtener el código del curso
+                                $id = $_GET['id'];
+
+                               // Calcular el total de ingresos
+                                $sql_ingresos = "SELECT SUM(amount) AS total_ingresos FROM financial_entries WHERE type = 'Ingreso' AND course_id = ".$id."";
+                                $result_ingresos = $conn->query($sql_ingresos);
+                                $row_ingresos = $result_ingresos->fetch_assoc();
+                                $total_ingresos = $row_ingresos["total_ingresos"];
+
+                                // Calcular el total de gastos
+                                $sql_gastos = "SELECT SUM(amount) AS total_gastos FROM financial_entries WHERE type = 'Gasto' AND course_id = ".$id."";
+                                $result_gastos = $conn->query($sql_gastos);
+                                $row_gastos = $result_gastos->fetch_assoc();
+                                $total_gastos = $row_gastos["total_gastos"];
+
+                                // Calcular el balance general
+                                $balance_general = $total_ingresos - $total_gastos;
+                                echo '<div class="col-md-4"> <div class="main-box mb-blue">';
+                                echo "<h5>Total de Ingresos: " . $total_ingresos . "</h5>";
+                                echo "<h5>Total de Gastos: " . $total_gastos . "</h5>";
+                                echo "<h5>Balance General: " . $balance_general . "</h5>";
+                                echo '</div></div>';
+
+                        ?>
+
+                        <?php 
+                        } 
+                        ?>
+
                 <!-- /. ROW  -->
 
             
@@ -487,52 +645,10 @@ $.ajax({
 
 })
 
- // Cargar opciones del campo Ítem
- $('#rubro_select').change(function () {
-        var rubro_id = $(this).val();
-        
-        $.ajax({
-            url: 'fees.php?action=get_items',
-            method: 'GET',
-            dataType: 'json',
-            data: { rubro_id: rubro_id },
-            success: function (data) {
-                var itemSelect = $('#item_select');
-                itemSelect.empty();
-                $.each(data, function (index, item) {
-                    itemSelect.append($('<option>', {
-                        value: item.item_id,
-                        text: item.item_name
-                    }));
-                });
-            }
-        });
-    });
 
-    // Cargar opciones del campo Subítem
-    $('#item_select').change(function () {
-        var item_id = $(this).val();
-        
-        $.ajax({
-            url: 'fees.php?action=get_subitems',
-            method: 'GET',
-            dataType: 'json',
-            data: { item_id: item_id },
-            success: function (data) {
-                var subitemSelect = $('#subitem_select');
-                subitemSelect.empty();
-                $.each(data, function (index, subitem) {
-                    subitemSelect.append($('<option>', {
-                        value: subitem.subitem_id,
-                        text: subitem.subitem_name
-                    }));
-                });
-            }
-        });
-
-
-        // Obtener la referencia al campo de selección de cursos
- var courseSelect = $('#expense_course_select');
+$(document).ready(function () {
+            // Obtener la referencia al campo de selección de cursos
+            var courseSelect = $('#expense_course_select');
 
 // Realizar una petición AJAX para obtener la lista de cursos
 $.ajax({
@@ -555,7 +671,7 @@ $.ajax({
         method: 'GET',
         dataType: 'json',
         success: function (data) {
-            var rubroSelect = $('#rubro_select');
+            var rubroSelect = $('#expense_rubro_select');
             $.each(data, function (index, rubro) {
                 rubroSelect.append($('<option>', {
                     value: rubro.rubro_id,
@@ -564,10 +680,54 @@ $.ajax({
             });
         }
     });
-
 })
 
  // Cargar opciones del campo Ítem
+ $('#expense_rubro_select').change(function () {
+        var rubro_id = $(this).val();
+        
+        $.ajax({
+            url: 'fees.php?action=get_items',
+            method: 'GET',
+            dataType: 'json',
+            data: { rubro_id: rubro_id },
+            success: function (data) {
+                var itemSelect = $('#expense_item_select');
+                itemSelect.empty();
+                $.each(data, function (index, item) {
+                    itemSelect.append($('<option>', {
+                        value: item.item_id,
+                        text: item.item_name
+                    }));
+                });
+            }
+        });
+    });
+
+    // Cargar opciones del campo Subítem
+    $('#expense_item_select').change(function () {
+        var item_id = $(this).val();
+        
+        $.ajax({
+            url: 'fees.php?action=get_subitems',
+            method: 'GET',
+            dataType: 'json',
+            data: { item_id: item_id },
+            success: function (data) {
+                var subitemSelect = $('#expense_subitem_select');
+                subitemSelect.empty();
+                $.each(data, function (index, subitem) {
+                    subitemSelect.append($('<option>', {
+                        value: subitem.subitem_id,
+                        text: subitem.subitem_name
+                    }));
+                });
+            }
+        });
+    })
+
+
+ // Cargar opciones del campo Ítem expense
  $('#rubro_select').change(function () {
         var rubro_id = $(this).val();
         
@@ -609,9 +769,6 @@ $.ajax({
                 });
             }
         });
-    });
-
-
     });
 
 
