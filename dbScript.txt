@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1:3306
--- Tiempo de generación: 24-08-2023 a las 04:06:34
+-- Tiempo de generación: 25-08-2023 a las 19:50:16
 -- Versión del servidor: 8.0.31
 -- Versión de PHP: 8.0.26
 
@@ -66,7 +66,7 @@ CREATE TABLE IF NOT EXISTS `courses` (
   `delete_status` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`course_id`),
   KEY `teacher_id` (`teacher_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Volcado de datos para la tabla `courses`
@@ -74,7 +74,8 @@ CREATE TABLE IF NOT EXISTS `courses` (
 
 INSERT INTO `courses` (`course_id`, `modality`, `type`, `area`, `course_name`, `course_code`, `teacher_id`, `cost`, `duration`, `start_date`, `days`, `schedule`, `delete_status`) VALUES
 (4, 'Presencial', 'Short Courses', '4', '1', 'curso1-2023-08-16', 11, '300000.00', '4 semanas', '2023-08-16', '10 dias', '8 am a 12 pm', 0),
-(5, 'Presencial', 'Short Courses', '4', '2', 'curso1-2023-08-16', 11, '300000.00', '4 semanas', '2023-08-16', '10 dias', '8 am a 12 pm', 0);
+(5, 'Presencial', 'Short Courses', '4', '2', 'curso1-2023-08-17', 11, '300000.00', '4 semanas', '2023-08-16', '10 dias', '8 am a 12 pm', 0),
+(6, 'Virtual', 'Short Courses', '3', '2', 'curso1-2023-08-18', 12, '300000.00', '4 semanas', '2023-08-16', '10 dias', '8 am a 12 pm', 0);
 
 -- --------------------------------------------------------
 
@@ -100,14 +101,15 @@ CREATE TABLE IF NOT EXISTS `enrollments` (
   PRIMARY KEY (`enrollment_id`),
   KEY `student_id` (`student_id`),
   KEY `teacher_id` (`teacher_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Volcado de datos para la tabla `enrollments`
 --
 
 INSERT INTO `enrollments` (`enrollment_id`, `student_id`, `identity_card_number`, `modality`, `type`, `area`, `course_name`, `teacher_id`, `cost`, `agreed_cost`, `advance_payment`, `balance`, `delete_status`) VALUES
-(12, 9, '12345', 'Presencial', 'Short Courses', '4', '4', 11, '300000.00', '100000.00', '10000.00', '90000.00', 0);
+(12, 9, '12345', 'Presencial', 'Short Courses', '4', '4', 11, '300000.00', '100000.00', '10000.00', '90000.00', 0),
+(13, 8, '12345', 'Presencial', 'Short Courses', '4', '4', 11, '300000.00', '100000.00', '10000.00', '90000.00', 0);
 
 -- --------------------------------------------------------
 
@@ -121,24 +123,109 @@ CREATE TABLE IF NOT EXISTS `financial_entries` (
   `date` date DEFAULT NULL,
   `course_id` int DEFAULT NULL,
   `category` varchar(255) DEFAULT NULL,
+  `general_category` int DEFAULT NULL,
   `item` varchar(255) DEFAULT NULL,
+  `general_item` int DEFAULT NULL,
   `subitem` varchar(255) DEFAULT NULL,
+  `general_subitem` int DEFAULT NULL,
   `detail` varchar(255) DEFAULT NULL,
   `amount` decimal(10,2) DEFAULT NULL,
-  `type` varchar(255) NOT NULL,
+  `type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   PRIMARY KEY (`entry_id`),
   KEY `course_id` (`course_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Volcado de datos para la tabla `financial_entries`
 --
 
-INSERT INTO `financial_entries` (`entry_id`, `date`, `course_id`, `category`, `item`, `subitem`, `detail`, `amount`, `type`) VALUES
-(4, '2023-08-23', 4, '1', '2', '3', 'dsf', '23441.00', 'Ingreso'),
-(2, '2023-08-23', 4, '1', '2', '3', 'dsf', '23441.00', 'Gasto'),
-(3, '2023-08-23', 5, '1', '2', '3', 'holatest', '20000.00', 'Ingreso'),
-(5, '2023-08-23', 5, '1', '2', '3', 'holatest', '20000.00', 'Gasto');
+INSERT INTO `financial_entries` (`entry_id`, `date`, `course_id`, `category`, `general_category`, `item`, `general_item`, `subitem`, `general_subitem`, `detail`, `amount`, `type`) VALUES
+(4, '2023-08-23', 4, '1', 0, '2', 0, '3', 0, 'dsf', '23441.00', 'Ingreso'),
+(2, '2023-08-23', 4, '1', 0, '2', 0, '3', 0, 'dsf', '23441.00', 'Gasto'),
+(3, '2023-08-23', 5, '1', 0, '2', 0, '3', 0, 'holatest', '20000.00', 'Ingreso'),
+(5, '2023-08-23', 5, '1', 0, '2', 0, '3', 0, 'holatest', '20000.00', 'Gasto'),
+(6, '2023-08-24', NULL, '1', 0, '1', 0, '1', 0, 'dsf', '23441.00', 'Ingreso'),
+(11, '2023-08-24', NULL, NULL, 1, NULL, 1, NULL, 1, 'gfdg', '3242.00', 'Ingreso');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `general_categories`
+--
+
+DROP TABLE IF EXISTS `general_categories`;
+CREATE TABLE IF NOT EXISTS `general_categories` (
+  `id` int NOT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Volcado de datos para la tabla `general_categories`
+--
+
+INSERT INTO `general_categories` (`id`, `name`) VALUES
+(1, 'Alquiler'),
+(2, 'Luz'),
+(3, 'Venta de Uniformes'),
+(4, 'Venta de Textos');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `general_items`
+--
+
+DROP TABLE IF EXISTS `general_items`;
+CREATE TABLE IF NOT EXISTS `general_items` (
+  `id` int NOT NULL,
+  `category_id` int DEFAULT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `category_id` (`category_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Volcado de datos para la tabla `general_items`
+--
+
+INSERT INTO `general_items` (`id`, `category_id`, `name`) VALUES
+(1, 1, 'Alquiler Edificio'),
+(2, 1, 'Alquiler Aulas'),
+(3, 2, 'Electricidad'),
+(4, 3, 'Uniformes Escolares'),
+(5, 4, 'Libros de Texto'),
+(6, 4, 'Libros de Referencia');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `general_subitems`
+--
+
+DROP TABLE IF EXISTS `general_subitems`;
+CREATE TABLE IF NOT EXISTS `general_subitems` (
+  `id` int NOT NULL,
+  `item_id` int DEFAULT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `item_id` (`item_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Volcado de datos para la tabla `general_subitems`
+--
+
+INSERT INTO `general_subitems` (`id`, `item_id`, `name`) VALUES
+(1, 1, 'Primer Piso'),
+(2, 1, 'Segundo Piso'),
+(3, 3, 'Iluminación'),
+(4, 4, 'Camisas'),
+(5, 4, 'Pantalones'),
+(6, 5, 'Matemáticas'),
+(7, 5, 'Ciencias'),
+(8, 6, 'Historia'),
+(9, 6, 'Geografía');
 
 -- --------------------------------------------------------
 
@@ -226,7 +313,7 @@ DROP TABLE IF EXISTS `productos`;
 CREATE TABLE IF NOT EXISTS `productos` (
   `id` int NOT NULL AUTO_INCREMENT,
   `tipo_id` int NOT NULL,
-  `nombre` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `nombre` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id`),
   KEY `tipo_id` (`tipo_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -429,7 +516,7 @@ INSERT INTO `teachers` (`teacher_id`, `first_name`, `last_name`, `identity_card_
 DROP TABLE IF EXISTS `tipos_productos`;
 CREATE TABLE IF NOT EXISTS `tipos_productos` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `nombre` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `nombre` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
