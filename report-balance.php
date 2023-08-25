@@ -24,35 +24,51 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 $reportType = $_POST["report_type"];
 
 if ($reportType === "curso") {
-          // Obtiene el curso seleccionado
-          $selectedCourse = $_POST["course_select"];
+    // Obtiene el curso seleccionado
+    $selectedCourse = $_POST["course_select"];
     
-          
-          $query = "SELECT * FROM courses WHERE course_id = $selectedCourse";
-          $result = $conn->query($query);
-          $curso = $result->fetch_assoc();
-          
-          // Calcula los ingresos para el curso
-          $queryIngresos = "SELECT SUM(amount) AS total_ingresos FROM financial_entries WHERE type = 'ingreso' AND course_id = $selectedCourse";
-          $resultIngresos = $conn->query($queryIngresos);
-          $rowIngresos = $resultIngresos->fetch_assoc();
-          $totalIngresos = $rowIngresos["total_ingresos"];
-          
-          // Calcula los egresos para el curso
-          $queryEgresos = "SELECT SUM(amount) AS total_egresos FROM financial_entries WHERE type = 'gasto' AND course_id = $selectedCourse";
-          $resultEgresos = $conn->query($queryEgresos);
-          $rowEgresos = $resultEgresos->fetch_assoc();
-          $totalEgresos = $rowEgresos["total_egresos"];
-          
-          // Calcula el resultado
-          $resultado = $totalIngresos - $totalEgresos;
-          
-          // Muestra los resultados en la interfaz
-          echo "<h2>Informes por Curso</h2>";
-          echo "<p>Curso: " . $curso["course_code"] . "</p>";
-          echo "<p>Ingresos: " . $totalIngresos . "</p>";
-          echo "<p>Egresos: " . $totalEgresos . "</p>";
-          echo "<p>Resultado: " . $resultado . "</p>";
+    
+    $query = "SELECT * FROM courses WHERE course_id = $selectedCourse";
+    $result = $conn->query($query);
+    $curso = $result->fetch_assoc();
+
+    $teachID = $curso["teacher_id"];
+
+    $queryTeacherName = "SELECT * FROM teachers WHERE teacher_id = $teachID";
+    $resultTeach = $conn->query($queryTeacherName);
+    $teachRes = $resultTeach->fetch_assoc();
+    
+    // Consulta para obtener la cantidad de alumnos inscritos
+    $queryAlumnos = "SELECT COUNT(*) AS cantidad_alumnos FROM enrollments WHERE course_name = $selectedCourse";
+    $resultAlumnos = $conn->query($queryAlumnos);
+    $rowAlumnos = $resultAlumnos->fetch_assoc();
+    $cantidadAlumnos = $rowAlumnos["cantidad_alumnos"];
+    
+    // Consulta para obtener los ingresos para el curso
+    $queryIngresos = "SELECT SUM(amount) AS total_ingresos FROM financial_entries WHERE type = 'ingreso' AND course_id = $selectedCourse";
+    $resultIngresos = $conn->query($queryIngresos);
+    $rowIngresos = $resultIngresos->fetch_assoc();
+    $totalIngresos = $rowIngresos["total_ingresos"];
+    
+    // Consulta para obtener los egresos para el curso
+    $queryEgresos = "SELECT SUM(amount) AS total_egresos FROM financial_entries WHERE type = 'gasto' AND course_id = $selectedCourse";
+    $resultEgresos = $conn->query($queryEgresos);
+    $rowEgresos = $resultEgresos->fetch_assoc();
+    $totalEgresos = $rowEgresos["total_egresos"];
+    
+    // Calcula el resultado
+    $resultado = $totalIngresos - $totalEgresos;
+    
+    // Muestra los resultados en la interfaz
+    echo "<h2>Informes por Curso</h2>";
+    echo "<p>Curso: " . $curso["course_name"] . "</p>";
+    echo "<p>Cantidad de alumnos inscritos: " . $cantidadAlumnos . "</p>";
+    echo "<p>Fecha de inicio: " . $curso["start_date"] . "</p>";
+    echo "<p>Profesor: " . $teachRes["first_name"] .' '. $teachRes["last_name"] ."</p>";
+    echo "<p>Ingresos: " . $totalIngresos . "</p>";
+    echo "<p>Egresos: " . $totalEgresos . "</p>";
+    echo "<p>Resultado: " . $resultado . "</p>";
+
 } elseif ($reportType === "modalidad") {
     // Lógica para informes por modalidad
 }
