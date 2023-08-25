@@ -20,216 +20,43 @@ $expense_date='now';
 ?>
 
 <?php
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+$reportType = $_POST["report_type"];
 
-
-if(isset($_POST['save']))
-{
-
-        if($_POST['action']=="add")
-        {
-
-            
-        // Obtener los datos del formulario
-        $date = $_POST['date'];
-        $course_id = $_POST['course_select'];
-        $rubro_id = $_POST['rubro_select'];
-        $item_id = $_POST['item_select'];
-        $subitem_id = $_POST['subitem_select'];
-        $detail = $_POST['detail'];
-        $amount = $_POST['amount'];
-        $type = 'Ingreso';
-
-        // Conectar a la base de datos (misma conexión que antes)
-
-        // Insertar los datos en la tabla de ingresos
-        $sql = "INSERT INTO financial_entries (date, course_id, category, item, subitem, detail, amount, type)
-                VALUES ('$date', $course_id, $rubro_id, $item_id, $subitem_id, '$detail', $amount, '$type')";
-
-        if ($conn->query($sql) === TRUE) {
-            echo '<script type="text/javascript">window.location="fees.php?act=1";</script>';
-        } else {
-            echo "Error: " . $sql . "<br>" . $conn->error;
-        }
-
-        }
-
-        if($_POST['action']=="add-expense")
-        {
-
-            
-        // Obtener los datos del formulario
-        $date = $_POST['general_date'];
-        $course_id = $_POST['expense_course_select'];
-        $rubro_id = $_POST['expense_rubro_select'];
-        $item_id = $_POST['expense_item_select'];
-        $subitem_id = $_POST['expense_subitem_select'];
-        $detail = $_POST['expense_detail'];
-        $amount = $_POST['expense_amount'];
-        $type = 'Gasto';
-
-        // Conectar a la base de datos (misma conexión que antes)
-
-        // Insertar los datos en la tabla de ingresos
-        $sql = "INSERT INTO financial_entries (date, course_id, category, item, subitem, detail, amount, type)
-                VALUES ('$date', $course_id, $rubro_id, $item_id, $subitem_id, '$detail', $amount, '$type')";
-
-        if ($conn->query($sql) === TRUE) {
-            echo '<script type="text/javascript">window.location="fees.php?act=1";</script>';
-        } else {
-            echo "Error: " . $sql . "<br>" . $conn->error;
-        }
-
-        }
-
-        
-        if ($_POST['action'] == 'add-institution-expense-deposit') {
-            // Obtener los datos del formulario
-            $date = $_POST['general_date'];
-            $rubro_id = $_POST['general_rubro_select'];
-            $item_id = $_POST['general_item_select'];
-            $subitem_id = $_POST['general_subitem_select'];
-            $detail = $_POST['general_detail'];
-            $amount = $_POST['general_amount'];
-            $type = $_POST['general_type_select'];
-
-            // Conectar a la base de datos (misma conexión que antes)
-
-            // Insertar los datos en la tabla de ingresos
-            $sql = "INSERT INTO financial_entries (date, general_category, general_item, general_subitem, detail, amount, type)
-                    VALUES ('$date', '$rubro_id', '$item_id', '$subitem_id', '$detail', '$amount', '$type')";
-
-            if ($conn->query($sql) === TRUE) {
-                echo '<script type="text/javascript">window.location="fees.php?act=1";</script>';
-            } else {
-                echo "Error: " . $sql . "<br>" . $conn->error;
-            }
-        }
-
+if ($reportType === "curso") {
+          // Obtiene el curso seleccionado
+          $selectedCourse = $_POST["course_select"];
+    
+          
+          $query = "SELECT * FROM courses WHERE course_id = $selectedCourse";
+          $result = $conn->query($query);
+          $curso = $result->fetch_assoc();
+          
+          // Calcula los ingresos para el curso
+          $queryIngresos = "SELECT SUM(amount) AS total_ingresos FROM financial_entries WHERE type = 'ingreso' AND course_id = $selectedCourse";
+          $resultIngresos = $conn->query($queryIngresos);
+          $rowIngresos = $resultIngresos->fetch_assoc();
+          $totalIngresos = $rowIngresos["total_ingresos"];
+          
+          // Calcula los egresos para el curso
+          $queryEgresos = "SELECT SUM(amount) AS total_egresos FROM financial_entries WHERE type = 'gasto' AND course_id = $selectedCourse";
+          $resultEgresos = $conn->query($queryEgresos);
+          $rowEgresos = $resultEgresos->fetch_assoc();
+          $totalEgresos = $rowEgresos["total_egresos"];
+          
+          // Calcula el resultado
+          $resultado = $totalIngresos - $totalEgresos;
+          
+          // Muestra los resultados en la interfaz
+          echo "<h2>Informes por Curso</h2>";
+          echo "<p>Curso: " . $curso["course_code"] . "</p>";
+          echo "<p>Ingresos: " . $totalIngresos . "</p>";
+          echo "<p>Egresos: " . $totalEgresos . "</p>";
+          echo "<p>Resultado: " . $resultado . "</p>";
+} elseif ($reportType === "modalidad") {
+    // Lógica para informes por modalidad
 }
-
-if (isset($_GET['action']) && $_GET['action'] == 'get_courses') {
-
-    // Realiza una consulta SQL para obtener los cursos filtrados
-    $query = "SELECT course_code, course_name, course_id FROM courses";
-    $result = $conn->query($query);
-
-    $courses = array();
-
-    if ($result !== false && $result->num_rows > 0) {
-        while ($row = $result->fetch_assoc()) {
-            $idCourse = $row['course_id'];
-            $codigo = $row['course_name'];
-            $codeCourse = $row['course_code'];
-            
-            // Obtener el nombre real del curso
-            $queryName = "SELECT name FROM name_courses WHERE id = '$codigo'";
-            $resultName = $conn->query($queryName);
-
-            if ($resultName !== false && $resultName->num_rows > 0) {
-                $realName = $resultName->fetch_assoc()['name'];
-            } else {
-                $realName = "Nombre no encontrado";
-            }
-
-            $courses[] = array(
-                'codigo' => $codigo,
-                'nombre' => $realName.'-'.$codeCourse,
-                'idCourse' => $idCourse,
-            );
-        }
-    }
-
-    header('Content-Type: application/json'); // Indicar que la respuesta es en formato JSON
-    echo json_encode($courses);
-    exit();
-
 }
-
-if (isset($_GET['action']) && $_GET['action'] == 'get_rubros') {
-
-    // Consulta para obtener los rubros
-        $sql = "SELECT * FROM rubros";
-        $result = $conn->query($sql);
-
-        $rubros = array();
-        if ($result->num_rows > 0) {
-            while ($row = $result->fetch_assoc()) {
-                $rubros[] = array(
-                    'rubro_id' => $row['id'],
-                    'rubro_name' => $row['name']
-                );
-            }
-        }
-
-        // Enviar la respuesta como JSON
-        header('Content-Type: application/json');
-        echo json_encode($rubros);
-        exit();
-
-}
-
-if (isset($_GET['action']) && $_GET['action'] == 'get_items') {
-
-    // Obtener el rubro seleccionado
-        $rubro_id = $_GET['rubro_id'];
-
-        // Conectar a la base de datos (misma conexión que antes)
-
-        // Consulta para obtener los ítems del rubro específico
-        $sql = "SELECT * FROM items WHERE rubro_id = $rubro_id";
-        $result = $conn->query($sql);
-
-        $items = array();
-        if ($result->num_rows > 0) {
-            while ($row = $result->fetch_assoc()) {
-                $items[] = array(
-                    'item_id' => $row['id'],
-                    'item_name' => $row['name']
-                );
-            }
-        }
-
-        // Cerrar la conexión a la base de datos
-
-        // Enviar la respuesta como JSON
-        header('Content-Type: application/json');
-        echo json_encode($items);
-        exit();
-}
-
-if (isset($_GET['action']) && $_GET['action'] == 'get_subitems') {
-
-        // Obtener el ítem seleccionado
-        $item_id = $_GET['item_id'];
-
-        // Conectar a la base de datos (misma conexión que antes)
-
-        // Consulta para obtener los subítems del ítem específico
-        $sql = "SELECT * FROM subitems WHERE item_id = $item_id";
-        $result = $conn->query($sql);
-
-        $subitems = array();
-        if ($result->num_rows > 0) {
-            while ($row = $result->fetch_assoc()) {
-                $subitems[] = array(
-                    'subitem_id' => $row['id'],
-                    'subitem_name' => $row['name']
-                );
-            }
-        }
-
-        // Cerrar la conexión a la base de datos
-
-        // Enviar la respuesta como JSON
-        header('Content-Type: application/json');
-        echo json_encode($subitems);
-
-        exit();
-
-}
-
-
-
 
 if(isset($_REQUEST['act']) && @$_REQUEST['act']=="1")
 {
@@ -278,57 +105,50 @@ include("php/header.php");
 				 <div class="row">
             <div class="col-sm-10 col-sm-offset-1">
                <div class="panel panel-primary">
-						<form action="fees.php" method="post" id="signupForm1" class="form-horizontal">
+						<form action="report-balance.php" method="post" id="signupForm1" class="form-horizontal">
                         <div class="panel-body">
 						<fieldset class="scheduler-border" >
 						 <legend  class="scheduler-border">Filtrar:</legend>
                             <div class="form-group">
-                                <label class="col-sm-3 control-label" for="modalidad">Modalidad*</label>
+                                <label class="col-sm-3 control-label" for="report_type">Seleccione el tipo de informe*</label>
                                 <div class="col-sm-9">
-                                    <select class="form-control" id="modalidad" name="modalidad">
+                                    <select class="form-control" id="report_type" name="report_type">
                                         <!-- Options will be loaded dynamically using JavaScript -->
-                                        <option value="">Selecciona una opcion</option>
-                                        <option value="Virtual">Virtual</option>
-                                        <option value="Presencial">Presencial</option>
+                                        <option value="">Selecciona un tipo de informe</option>
+                                        <option value="curso">Informes por Curso</option>
+                                        <option value="modalidad">Informes por Modalidad</option>
+                                        <option value="area">Informes por Área</option>
+                                        <option value="fechas">Informes por Fechas</option>
+                                        <option value="estudiante">Informes por Estudiante</option>
+                                        <option value="profesor">Informes por Profesor</option>
                                     </select>
                                 </div>
                             </div>
 
-                            
+                         <div id="curso_field" style="display: none;">
                             <div class="form-group">
-                                <label class="col-sm-3 control-label" for="rubro_select">Rubro*</label>
+                                <label class="col-sm-3 control-label" for="course_select">Curso*</label>
                                 <div class="col-sm-9">
-                                    <select class="form-control" id="rubro_select" name="rubro_select">
+                                    <select class="form-control" id="course_select" name="course_select">
                                         <!-- Options will be loaded dynamically using JavaScript -->
-                                        <option value="">Selecciona un rubro</option>
+                                            <option value="">Selecciona un curso</option>
+                                            <?php
+                                            // Conectar a la base de datos y obtener la lista de cursos
+                                            // ...
+                                            $query = "SELECT * FROM courses";
+                                            $result = $conn->query($query);
+                                            // Iterar sobre los cursos y mostrarlos en las opciones del select
+                                            while ($row = $result->fetch_assoc()) {
+                                                echo '<option value="' . $row["course_id"] . '">' . $row["course_code"] . '</option>';
+                                            }
+                                            
+                                            // Cerrar la conexión a la base de datos
+                                            // ...
+                                            ?>
                                     </select>
                                 </div>
                             </div>
-
-                            <div class="form-group">
-                                <label class="col-sm-3 control-label" for="item_select">Ítem*</label>
-                                <div class="col-sm-9">
-                                    <select class="form-control" id="item_select" name="item_select">
-                                        <!-- Options will be loaded dynamically using JavaScript -->
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="col-sm-3 control-label" for="subitem_select">Subítem*</label>
-                                <div class="col-sm-9">
-                                    <select class="form-control" id="subitem_select" name="subitem_select">
-                                        <!-- Options will be loaded dynamically using JavaScript -->
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="col-sm-3 control-label" for="detail">Detalle*</label>
-                                <div class="col-sm-9">
-                                    <input type="text" class="form-control" id="detail" name="detail" />
-                                </div>
-                            </div>
+                         </div>
                       
                             <div class="form-group">
                             <label class="col-sm-3 control-label" for="Old">Fecha Inicio* </label>
@@ -370,105 +190,7 @@ include("php/header.php");
                 <?php 
                     }
                 ?>
-
-
-                    <?php 
-                        if (isset($_GET['action']) && $_GET['action']=='balance') {
-
-                               // Calcular el total de ingresos
-                                $sql_ingresos = "SELECT SUM(amount) AS total_ingresos FROM financial_entries WHERE type = 'Ingreso'";
-                                $result_ingresos = $conn->query($sql_ingresos);
-                                $row_ingresos = $result_ingresos->fetch_assoc();
-                                $total_ingresos = $row_ingresos["total_ingresos"];
-
-                                // Calcular el total de gastos
-                                $sql_gastos = "SELECT SUM(amount) AS total_gastos FROM financial_entries WHERE type = 'Gasto'";
-                                $result_gastos = $conn->query($sql_gastos);
-                                $row_gastos = $result_gastos->fetch_assoc();
-                                $total_gastos = $row_gastos["total_gastos"];
-
-                                // Calcular el balance general
-                                $balance_general = $total_ingresos - $total_gastos;
-                                echo '<div class="col-md-4"> <div class="main-box mb-blue">';
-                                echo "<h5>Total de Ingresos: " . $total_ingresos . "</h5>";
-                                echo "<h5>Total de Gastos: " . $total_gastos . "</h5>";
-                                echo "<h5>Balance General: " . $balance_general . "</h5>";
-                                echo '</div></div>';
-
-                    ?>
-
-                    <div class="panel panel-default">
-                        <div class="panel-body">
-                            <div class="table-sorting table-responsive">
-                                <table class="table table-striped table-bordered table-hover" id="tSortable22">
-                                    <thead>
-                                        <tr>
-                                            <th>#</th>
-											<th>Curso</th>
-											<th>Informe</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-									<?php
-									$sql = "select * from courses";
-									$q = $conn->query($sql);
-									$i=1;
-									while($r = $q->fetch_assoc())
-									{
-                                    $sqlCourse = "select * from financial_entries WHERE course_id = ".$r['course_id']."";
-                                    $qC = $conn->query($sqlCourse);
-                                    $rC = $qC->fetch_assoc();
-                           
-									echo '<tr>
-                                            <td>'.$i.'</td>
-                                            <td>'.$r['course_code'].'</td>
-											<td><a href="fees.php?action=see-balance-course&id='.$r['course_id'].'" class="btn btn-success btn-xs"><span class="glyphicon glyphicon-edit"></span></a></td>
-										</tr>';
-										$i++;
-									}
-									?>
-									
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                        <?php 
-                        } 
-                        ?>
-
-                        <?php 
-                        if (isset($_GET['action']) && $_GET['action']=='see-balance-course') {
-
-                                // Obtener el código del curso
-                                $id = $_GET['id'];
-
-                               // Calcular el total de ingresos
-                                $sql_ingresos = "SELECT SUM(amount) AS total_ingresos FROM financial_entries WHERE type = 'Ingreso' AND course_id = ".$id."";
-                                $result_ingresos = $conn->query($sql_ingresos);
-                                $row_ingresos = $result_ingresos->fetch_assoc();
-                                $total_ingresos = $row_ingresos["total_ingresos"];
-
-                                // Calcular el total de gastos
-                                $sql_gastos = "SELECT SUM(amount) AS total_gastos FROM financial_entries WHERE type = 'Gasto' AND course_id = ".$id."";
-                                $result_gastos = $conn->query($sql_gastos);
-                                $row_gastos = $result_gastos->fetch_assoc();
-                                $total_gastos = $row_gastos["total_gastos"];
-
-                                // Calcular el balance general
-                                $balance_general = $total_ingresos - $total_gastos;
-                                echo '<div class="col-md-4"> <div class="main-box mb-blue">';
-                                echo "<h5>Total de Ingresos: " . $total_ingresos . "</h5>";
-                                echo "<h5>Total de Gastos: " . $total_gastos . "</h5>";
-                                echo "<h5>Balance General: " . $balance_general . "</h5>";
-                                echo '</div></div>';
-
-                        ?>
-
-                        <?php 
-                        } 
-                        ?>
-
+    
                 <!-- /. ROW  -->
 
             
@@ -489,6 +211,23 @@ include("php/header.php");
     include("layout/footer-links.php");
 
     ?>
+
+
+<script>
+
+    // Mostrar/ocultar el campo de selección de curso según el tipo de informe elegido
+    const reportTypeSelect = document.querySelector('[name="report_type"]');
+    const cursoField = document.getElementById('curso_field');
+    
+    reportTypeSelect.addEventListener('change', function() {
+        if (reportTypeSelect.value === 'curso') {
+            cursoField.style.display = 'block';
+        } else {
+            cursoField.style.display = 'none';
+        }
+    });
+
+</script>
 
     <script>
 

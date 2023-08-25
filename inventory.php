@@ -543,9 +543,6 @@ $(document).ready(function () {
 		
 		 <link href="css/datatable/datatable.css" rel="stylesheet" />
 		 
-		
-		 
-		 
 		<div class="panel panel-default">
                         <div class="panel-heading">
                             Administrar Información del inventario  
