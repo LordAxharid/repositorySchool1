@@ -135,6 +135,187 @@ echo $errormsg;
 ?>
                     </div>
                 </div>
+
+				<?php 
+		 if(isset($_GET['action']) && @$_GET['action']=="edit-asistence")
+		 {
+		?>
+		
+			<script type="text/javascript" src="js/validation/jquery.validate.min.js"></script>
+                <div class="row">
+            <div class="col-sm-10 col-sm-offset-1">
+               <div class="panel panel-primary">
+                        <div class="panel-heading">
+                           <?php echo ($action=="add")? "Asistencia Estudiantes": "Asistencia Estudiantes"; ?>
+                        </div>
+						<form action="student.php" method="post" id="signupForm1" class="form-horizontal">
+                        <div class="panel-body">
+						<fieldset class="scheduler-border" >
+						 <legend  class="scheduler-border">Información asistencia:</legend>
+						<div class="form-group">
+								<label class="col-sm-3 control-label" for="Old">Curso* </label>
+								<div class="col-sm-9">
+									<input type="text" class="form-control" id="fname" name="fname" value="<?php echo $fname;?>"  />
+								</div>
+							</div>
+	
+						<div class="form-group">
+							<label class="col-sm-3 control-label" for="Old">Fecha de clase* </label>
+							<div class="col-sm-9">
+								<input type="date" class="form-control" id="date_class" name="lname" value="<?php echo $lname;?>"  />
+							</div>
+						</div>
+
+						<div class="panel-body">
+                            <div class="table-sorting table-responsive">
+                                <table class="table table-striped table-bordered table-hover" id="tSortable22">
+							<thead>
+								<tr>
+									<th>Presente</th>
+									<th>Nombre del Estudiante</th>
+									<th>Número de Identificación</th>
+								</tr>
+							</thead>
+							<tbody>
+									<?php
+									$idCourse = $_GET['id'];
+
+									$sql = "select * from enrollments where course_name=".$idCourse."";
+									$q = $conn->query($sql);
+									$i=1;
+									while($r = $q->fetch_assoc())
+									{
+									$sqlStudent = "select * from students where student_id=".$r['student_id']."";
+									$qS = $conn->query($sqlStudent);
+									$rS = $qS->fetch_assoc();
+									echo '<tr>
+											<td><input type="checkbox" name="attendance[]" value="' . $r['student_id'] . '"></td>
+                                            <td>'.$rS['first_name'].'</td>
+											<td>'.$rS['identity_card_number'].'</td>	
+										</tr>';
+										$i++;
+									}
+									?>
+									
+                            </tbody>
+						</table>	
+		 				 </div>
+						</div>
+						
+
+						 </fieldset>
+						
+						<div class="form-group">
+								<div class="col-sm-8 col-sm-offset-2">
+								<input type="hidden" name="id" value="<?php echo $id;?>">
+								<input type="hidden" name="action" value="<?php echo $action;?>">
+								
+									<button type="submit" name="save" class="btn btn-primary">Guardar </button>
+								 
+								   
+								   
+								</div>
+							</div>
+                         
+                           
+                           
+                         
+                           
+                         </div>
+							</form>
+							
+                        </div>
+                            </div>
+            
+			
+                </div>
+
+			<script>
+
+$(document).ready(function () {
+    // Cargar opciones del campo Modalidad
+    $.ajax({
+        url: 'obtener_modalidades.php',
+        method: 'GET',
+        dataType: 'json',
+        success: function (data) {
+            var modalidadSelect = $('#modalidad_select');
+            $.each(data, function (index, option) {
+                modalidadSelect.append($('<option>', {
+                    value: option.value,
+                    text: option.text
+                }));
+            });
+        }
+    });
+
+    // Cargar opciones del campo Tipo
+    $.ajax({
+        url: 'obtener_tipos.php',
+        method: 'GET',
+        dataType: 'json',
+        success: function (data) {
+            var tipoSelect = $('#tipo_select');
+            $.each(data, function (index, option) {
+                tipoSelect.append($('<option>', {
+                    value: option.value,
+                    text: option.text
+                }));
+            });
+        }
+    });
+
+    // Cargar opciones del campo Área
+    $.ajax({
+        url: 'obtener_areas.php',
+        method: 'GET',
+        dataType: 'json',
+        success: function (data) {
+            var areaSelect = $('#area_select');
+            $.each(data, function (index, option) {
+                areaSelect.append($('<option>', {
+                    value: option.value,
+                    text: option.text
+                }));
+            });
+        }
+    });
+
+    // Cargar opciones del campo Nombre del Curso
+    $('#area_select').change(function () {
+        var selectedArea = $(this).val();
+        $.ajax({
+            url: 'obtener_cursos_por_area.php',
+            method: 'GET',
+            data: { area: selectedArea },
+            dataType: 'json',
+            success: function (data) {
+                var cursoSelect = $('#curso_select');
+                cursoSelect.empty();
+                cursoSelect.append($('<option>', {
+                    value: '',
+                    text: 'Selecciona un curso'
+                }));
+                $.each(data, function (index, option) {
+                    cursoSelect.append($('<option>', {
+                        value: option.value,
+                        text: option.text
+                    }));
+                });
+            }
+        });
+    });
+});
+
+			</script>
+
+
+			   
+		<?php
+		}
+		?>
+
+
 				
 <!-- Calificaciones -->
 <?php 
@@ -338,9 +519,8 @@ echo $errormsg;
 											 <th>#</th>
 											 <th>Nombre curso</th>
 											 <th>Codigo del curso</th>
-											 <th>Descripcion</th>
 											 <th>Fecha de inicio </th>
-											 <th>Fecha de finalizacion</th>
+											 <th>Duracion</th>
 											 <th>Horarios</th>
 											 <th>Asistencia</th>
 											 <th>Notas</th>
@@ -348,23 +528,24 @@ echo $errormsg;
 									 </thead>
 									 <tbody>
 									 <?php
-									 $sql = "select * from students where delete_status='0'";
+									 $sql = "select * from courses where delete_status='0'";
 									 $q = $conn->query($sql);
 									 $i=1;
 									 while($r = $q->fetch_assoc())
 									 {
+										$sqlNameCourse = "select * from name_courses where delete_status='0' AND id = ".$r['course_name']."";
+										$qNC = $conn->query($sqlNameCourse);
+										$rNC = $qNC->fetch_assoc();
 									 
 									 echo '<tr>
 											 <td>'.$i.'</td>
-											 <td>'.$r['first_name'].'</td>
-											 <td>'.$r['last_name'].'</td>
-											 <td>'.$r['identity_card_number'].'</td>
-											 <td>'.$r['phone_number'].'</td>
-											 <td>'.$r['email'].'</td>
-											 <td>'.$r['city'].'</td>
-											 <td><a href="academic.php?action=edit&id='.$r['student_id'].'" class="btn btn-success btn-xs"><span class="glyphicon glyphicon-edit"></span></a></td>	
-											 <td><a href="academic.php?action=enrollments&id='.$r['student_id'].'" class="btn btn-success btn-xs"><span class="glyphicon glyphicon-barcode"></span></a></td>	
-											
+											 <td>'.$rNC['name'].'</td>
+											 <td>'.$r['course_code'].'</td>
+											 <td>'.$r['start_date'].'</td>
+											 <td>'.$r['duration'].'</td>
+											 <td>'.$r['schedule'].'</td>
+											 <td><a href="academic.php?action=edit-asistence&id='.$r['course_id'].'" class="btn btn-success btn-xs"><span class="glyphicon glyphicon-edit"></span></a></td>	
+											 <td><a href="academic.php?action=enrollments&id='.$r['course_id'].'" class="btn btn-success btn-xs"><span class="glyphicon glyphicon-barcode"></span></a></td>	
 										 </tr>';
 										 $i++;
 									 }
@@ -380,341 +561,6 @@ echo $errormsg;
 		 <?php 
 			}
 		 ?>
-
-
-        <?php 
-		 if(isset($_GET['action']) && @$_GET['action']=="add" || @$_GET['action']=="edit")
-		 {
-		?>
-		
-			<script type="text/javascript" src="js/validation/jquery.validate.min.js"></script>
-                <div class="row">
-            <div class="col-sm-10 col-sm-offset-1">
-               <div class="panel panel-primary">
-                        <div class="panel-heading">
-                           <?php echo ($action=="add")? "Agregar Estudiante": "Asistencia Estudiantes"; ?>
-                        </div>
-						<form action="student.php" method="post" id="signupForm1" class="form-horizontal">
-                        <div class="panel-body">
-						<fieldset class="scheduler-border" >
-						 <legend  class="scheduler-border">Información asistencia:</legend>
-						<div class="form-group">
-								<label class="col-sm-3 control-label" for="Old">Curso* </label>
-								<div class="col-sm-9">
-									<input type="text" class="form-control" id="fname" name="fname" value="<?php echo $fname;?>"  />
-								</div>
-							</div>
-	
-						<div class="form-group">
-							<label class="col-sm-3 control-label" for="Old">Fecha de clase* </label>
-							<div class="col-sm-9">
-								<input type="text" class="form-control" id="lname" name="lname" value="<?php echo $lname;?>"  />
-							</div>
-						</div>
-
-						<div class="panel-body">
-                            <div class="table-sorting table-responsive">
-                                <table class="table table-striped table-bordered table-hover" id="tSortable22">
-							<thead>
-								<tr>
-									<th>Presente</th>
-									<th>Nombre del Estudiante</th>
-									<th>Número de Identificación</th>
-								</tr>
-							</thead>
-							<tbody>
-									<?php
-									$sql = "select * from students where delete_status='0'";
-									$q = $conn->query($sql);
-									$i=1;
-									while($r = $q->fetch_assoc())
-									{
-									
-									echo '<tr>
-											<td><input type="checkbox" name="attendance[]" value="' . $r['student_id'] . '"></td>
-                                            <td>'.$r['first_name'].'</td>
-											<td>'.$r['identity_card_number'].'</td>
-											</td>	
-										</tr>';
-										$i++;
-									}
-									?>
-									
-                                        
-                                        
-                                    </tbody>
-						</table>	
-		 				 </div>
-						</div>
-						
-
-						 </fieldset>
-						
-						<div class="form-group">
-								<div class="col-sm-8 col-sm-offset-2">
-								<input type="hidden" name="id" value="<?php echo $id;?>">
-								<input type="hidden" name="action" value="<?php echo $action;?>">
-								
-									<button type="submit" name="save" class="btn btn-primary">Guardar </button>
-								 
-								   
-								   
-								</div>
-							</div>
-                         
-                           
-                           
-                         
-                           
-                         </div>
-							</form>
-							
-                        </div>
-                            </div>
-            
-			
-                </div>
-
-			<script>
-
-$(document).ready(function () {
-    // Cargar opciones del campo Modalidad
-    $.ajax({
-        url: 'obtener_modalidades.php',
-        method: 'GET',
-        dataType: 'json',
-        success: function (data) {
-            var modalidadSelect = $('#modalidad_select');
-            $.each(data, function (index, option) {
-                modalidadSelect.append($('<option>', {
-                    value: option.value,
-                    text: option.text
-                }));
-            });
-        }
-    });
-
-    // Cargar opciones del campo Tipo
-    $.ajax({
-        url: 'obtener_tipos.php',
-        method: 'GET',
-        dataType: 'json',
-        success: function (data) {
-            var tipoSelect = $('#tipo_select');
-            $.each(data, function (index, option) {
-                tipoSelect.append($('<option>', {
-                    value: option.value,
-                    text: option.text
-                }));
-            });
-        }
-    });
-
-    // Cargar opciones del campo Área
-    $.ajax({
-        url: 'obtener_areas.php',
-        method: 'GET',
-        dataType: 'json',
-        success: function (data) {
-            var areaSelect = $('#area_select');
-            $.each(data, function (index, option) {
-                areaSelect.append($('<option>', {
-                    value: option.value,
-                    text: option.text
-                }));
-            });
-        }
-    });
-
-    // Cargar opciones del campo Nombre del Curso
-    $('#area_select').change(function () {
-        var selectedArea = $(this).val();
-        $.ajax({
-            url: 'obtener_cursos_por_area.php',
-            method: 'GET',
-            data: { area: selectedArea },
-            dataType: 'json',
-            success: function (data) {
-                var cursoSelect = $('#curso_select');
-                cursoSelect.empty();
-                cursoSelect.append($('<option>', {
-                    value: '',
-                    text: 'Selecciona un curso'
-                }));
-                $.each(data, function (index, option) {
-                    cursoSelect.append($('<option>', {
-                        value: option.value,
-                        text: option.text
-                    }));
-                });
-            }
-        });
-    });
-});
-
-			</script>
-
-
-               	   
-		<script type="text/javascript">
-		
-		$( document ).ready( function () {			
-			
-		$( "#joindate" ).datepicker({
-			dateFormat:"yy-mm-dd",
-			changeMonth: true,
-			changeYear: true,
-			yearRange: "1970:<?php echo date('Y');?>"
-		});	
-		
-		if($("#signupForm1").length > 0)
-         {
-		 
-		 <?php if($action=='add')
-		 {
-		 ?>
-		 
-			$( "#signupForm1" ).validate( {
-				rules: {
-					fname: "required",
-					lname: "required",
-					joindate: "required",
-					emailid: "email",
-					branch: "required",
-					
-					
-					contact: {
-						required: true,
-						digits: true
-					},
-					
-					fees: {
-						required: true,
-						digits: true
-					},
-					
-					
-					advancefees: {
-						required: true,
-						digits: true
-					},
-				
-					
-				},
-			<?php
-			}else
-			{
-			?>
-			
-			$( "#signupForm1" ).validate( {
-				rules: {
-					sname: "required",
-					joindate: "required",
-					emailid: "email",
-					branch: "required",
-					
-					
-					contact: {
-						required: true,
-						digits: true
-					}
-					
-				},
-			
-			
-			
-			<?php
-			}
-			?>
-				
-				errorElement: "em",
-				errorPlacement: function ( error, element ) {
-					// Add the `help-block` class to the error element
-					error.addClass( "help-block" );
-
-					// Add `has-feedback` class to the parent div.form-group
-					// in order to add icons to inputs
-					element.parents( ".col-sm-10" ).addClass( "has-feedback" );
-
-					if ( element.prop( "type" ) === "checkbox" ) {
-						error.insertAfter( element.parent( "label" ) );
-					} else {
-						error.insertAfter( element );
-					}
-
-					// Add the span element, if doesn't exists, and apply the icon classes to it.
-					if ( !element.next( "span" )[ 0 ] ) {
-						$( "<span class='glyphicon glyphicon-remove form-control-feedback'></span>" ).insertAfter( element );
-					}
-				},
-				success: function ( label, element ) {
-					// Add the span element, if doesn't exists, and apply the icon classes to it.
-					if ( !$( element ).next( "span" )[ 0 ] ) {
-						$( "<span class='glyphicon glyphicon-ok form-control-feedback'></span>" ).insertAfter( $( element ) );
-					}
-				},
-				highlight: function ( element, errorClass, validClass ) {
-					$( element ).parents( ".col-sm-10" ).addClass( "has-error" ).removeClass( "has-success" );
-					$( element ).next( "span" ).addClass( "glyphicon-remove" ).removeClass( "glyphicon-ok" );
-				},
-				unhighlight: function ( element, errorClass, validClass ) {
-					$( element ).parents( ".col-sm-10" ).addClass( "has-success" ).removeClass( "has-error" );
-					$( element ).next( "span" ).addClass( "glyphicon-ok" ).removeClass( "glyphicon-remove" );
-				}
-			} );
-			
-			}
-			
-		} );
-		
-		
-		
-		$("#fees").keyup( function(){
-		$("#advancefees").val("");
-		$("#balance").val(0);
-		var fee = $.trim($(this).val());
-		if( fee!='' && !isNaN(fee))
-		{
-		$("#advancefees").removeAttr("readonly");
-		$("#balance").val(fee);
-		$('#advancefees').rules("add", {
-            max: parseInt(fee)
-        });
-		
-		}
-		else{
-		$("#advancefees").attr("readonly","readonly");
-		}
-		
-		});
-		
-		
-		
-		
-		$("#advancefees").keyup( function(){
-		
-		var advancefees = parseInt($.trim($(this).val()));
-		var totalfee = parseInt($("#fees").val());
-		if( advancefees!='' && !isNaN(advancefees) && advancefees<=totalfee)
-		{
-		var balance = totalfee-advancefees;
-		$("#balance").val(balance);
-		
-		}
-		else{
-		$("#balance").val(totalfee);
-		}
-		
-		});
-		
-		
-	</script>
-
-
-			   
-		<?php
-		}
-		?>
 		    
             </div>
             <!-- /. PAGE INNER  -->

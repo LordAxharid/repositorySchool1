@@ -460,7 +460,7 @@ echo $errormsg;
 						<div class="form-group">
 							<label class="col-sm-3 control-label" for="area_select">Área*</label>
 							<div class="col-sm-9">
-								<select id="area_select" name="area_select">
+								<select class="form-control" id="area_select" name="area_select">
 									<!-- Options will be loaded dynamically using JavaScript -->
 									<option value="">Selecciona un área</option>
 								</select>
